@@ -127,5 +127,5 @@
       window.location.href = ret;
     }
   </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(regs => {for(let reg of regs) {reg.unregister();}});}</script></body>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").then(reg => console.log("SW Registered", reg)).catch(err => console.log("SW Failed", err));}</script></body>
 </html>

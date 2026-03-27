@@ -173,7 +173,7 @@
 </div>
 </div>
 </div>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(regs => {for(let reg of regs) {reg.unregister();}});}</script></body>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").then(reg => console.log("SW Registered", reg)).catch(err => console.log("SW Failed", err));}</script></body>
 <script>
     const SUPABASE_URL = "https://zglcrgarasocrhkchcvl.supabase.co/functions/v1/sahaya-chat";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGNyZ2FyYXNvY3Joa2NoY3ZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDcxMDksImV4cCI6MjA5MDE4MzEwOX0.B6HwAdEBLa_1Ql20Z753ntNKXxoeLXzaLkdcBydsiHg";
@@ -441,4 +441,5 @@
         // Voices loaded
     };
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").then(reg => console.log("SW Registered", reg)).catch(err => console.log("SW Failed", err));}</script></body>
 </html>

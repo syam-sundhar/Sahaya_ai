@@ -274,4 +274,5 @@
   }
 </script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(regs => {for(let reg of regs) {reg.unregister();}});}</script></body></html>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").then(reg => console.log("SW Registered", reg)).catch(err => console.log("SW Failed", err));}</script>
+</body></html>
