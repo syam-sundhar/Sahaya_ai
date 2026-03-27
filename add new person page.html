@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SAHAYA - Create New Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "background": "#fff8f7",
+              "on-surface-variant": "#404945",
+              "on-tertiary-container": "#014142",
+              "error": "#ba1a1a",
+              "tertiary-container": "#79adad",
+              "on-tertiary-fixed-variant": "#164e4f",
+              "on-primary-fixed": "#002019",
+              "on-tertiary": "#ffffff",
+              "tertiary": "#326667",
+              "tertiary-fixed-dim": "#9bd0d0",
+              "on-primary-container": "#0c4236",
+              "surface-container-highest": "#ece0de",
+              "on-secondary": "#ffffff",
+              "inverse-on-surface": "#fbeeec",
+              "secondary-container": "#fec0b3",
+              "tertiary-fixed": "#b7ecec",
+              "on-background": "#201a19",
+              "inverse-surface": "#362f2e",
+              "secondary": "#815248",
+              "secondary-fixed": "#ffdad3",
+              "surface-variant": "#ece0de",
+              "on-surface": "#201a19",
+              "on-error": "#ffffff",
+              "surface-dim": "#e4d7d5",
+              "error-container": "#ffdad6",
+              "surface-tint": "#366759",
+              "surface": "#fff8f7",
+              "on-primary-fixed-variant": "#1d4f42",
+              "on-secondary-container": "#7a4c42",
+              "outline": "#707975",
+              "inverse-primary": "#9ed1c0",
+              "surface-bright": "#fff8f7",
+              "on-secondary-fixed-variant": "#663b32",
+              "on-secondary-fixed": "#32110b",
+              "on-primary": "#ffffff",
+              "surface-container-high": "#f2e5e3",
+              "on-tertiary-fixed": "#002020",
+              "surface-container-low": "#fef1ef",
+              "primary-fixed-dim": "#9ed1c0",
+              "outline-variant": "#c0c8c4",
+              "primary-fixed": "#b9eddc",
+              "secondary-fixed-dim": "#f5b8ab",
+              "primary": "#366759",
+              "on-error-container": "#93000a",
+              "surface-container-lowest": "#ffffff",
+              "primary-container": "#7cae9e",
+              "surface-container": "#f8ebe9"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "0.5rem",
+              "xl": "0.75rem",
+              "2xl": "1.5rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .avatar-glow {
+        background: radial-gradient(circle, #BFF5F5 0%, #CFECE0 100%);
+      }
+      .btn-gradient {
+        background: linear-gradient(135deg, #366759 0%, #7CAE9E 100%);
+      }
+      body {
+        min-height: 100dvh;
+      }
+    </style>
+<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+<body class="bg-background text-on-background font-body flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-[#F8EBE9] dark:bg-stone-900 flex justify-between items-center px-6 py-4 w-full sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<a class="text-[#366759] dark:text-[#7CAE9E] hover:bg-[#CFECE0]/50 transition-colors p-2 rounded-full active:scale-95" href="index.html">
+<span class="material-symbols-outlined">arrow_back</span>
+</a>
+<h1 class="font-['Manrope'] font-black text-[#366759] dark:text-[#7CAE9E] tracking-widest text-2xl uppercase">Sahaya</h1>
+</div>
+<div class="bg-[#366759] p-2 rounded-full flex items-center justify-center w-10 h-10 shadow-sm">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">spa</span>
+</div>
+</header>
+<main class="flex-grow container mx-auto px-6 py-8 pb-32 max-w-xl">
+<!-- Create Profile Section -->
+<section class="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_4px_40px_rgba(32,26,25,0.04)] border border-surface-container">
+<div class="text-center mb-10">
+<h2 class="font-headline text-3xl font-extrabold text-primary mb-2">Create New Profile</h2>
+<p class="text-on-surface-variant">Tell us a bit about who's joining</p>
+</div>
+<form class="space-y-8" id="add-profile-form">
+<!-- Avatar Preview -->
+<div class="flex justify-center mb-8">
+<div class="avatar-glow p-2 rounded-full w-32 h-32 relative">
+<img alt="New Profile" class="w-full h-full object-cover rounded-full" id="avatar-preview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdarDxE-KV2ig5BT7i5gAeOJf0EIGutWmq5I-sV9xHUI2g4KFZlpcZ9wFogbAtTksACrLZwdisiz2VeNYzLRUq9x3RxGf9sql2PUltfTct5B4OgLK3BPM9luOD7H5tvmw2embj-pzrns_Jgyi_MjGs5aZ5eet_c_Flw85mB86bR-v8-7drhUrhHBKCY9I8WJURrTpiJQH2cQhSB65iCSkwMlHZT4XT_PefL1CGOVF4t0iVMBOyE2y08Qbu27Rpid-EahsQ73Vxu0s"/>
+<label class="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg cursor-pointer active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm">photo_camera</span>
+<input type="file" id="profile-photo-input" accept="image/*" class="hidden" />
+</label>
+</div>
+</div>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-semibold text-primary mb-2 ml-1">Full Name</label>
+<input id="profile-name" class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:opacity-40 transition-all outline-none" placeholder="Enter name" required="" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-sm font-semibold text-primary mb-2 ml-1">Age</label>
+<input id="profile-age" class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:opacity-40 transition-all outline-none" placeholder="Years" required="" type="number"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-primary mb-2 ml-1">Gender</label>
+<select id="profile-gender" class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface appearance-none outline-none" required="">
+<option disabled="" selected="" value="">Select</option>
+<option value="male">Male</option>
+<option value="female">Female</option>
+<option value="other">Other</option>
+</select>
+</div>
+</div>
+</div>
+<div class="pt-6">
+<button class="w-full btn-gradient py-4 rounded-lg text-white font-headline font-bold text-lg shadow-lg shadow-primary/20 active:scale-95 transition-all" type="submit">
+                        Continue
+                    </button>
+</div>
+</form>
+</section>
+</main>
+<!-- BottomNavBar -->
+<!-- Translate Button -->
+<button onclick="openTranslatePage()" title="Translate" class="fixed top-3 z-[9999] right-16 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
+  <span class="material-symbols-outlined">translate</span>
+</button>
+<div id="google_translate_element" style="display:none;"></div>
+<script src="translate.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAsSMEzG_Up6pJwzBUSD8oW5VuY5XhmCuA",
+    authDomain: "sahaya-ai.firebaseapp.com",
+    projectId: "sahaya-ai",
+    storageBucket: "sahaya-ai.firebasestorage.app",
+    messagingSenderId: "648285547085",
+    appId: "1:648285547085:web:756f7440911378888eca04",
+    measurementId: "G-FQ3F0N3HE0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+  let currentUser = null;
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+    } else {
+      window.location.href = 'login.html';
+    }
+  });
+
+  const photoInput = document.getElementById('profile-photo-input');
+  const avatarPreview = document.getElementById('avatar-preview');
+  let photoDataUrl = avatarPreview ? avatarPreview.src : '';
+
+  function compressImage(file, maxWidth, maxHeight, callback) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Compress as JPEG with 70% quality to avoid 1MB limit
+        callback(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  if (photoInput) {
+    photoInput.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        compressImage(e.target.files[0], 500, 500, function(compressedDataUrl) {
+           photoDataUrl = compressedDataUrl;
+           if (avatarPreview) avatarPreview.src = photoDataUrl;
+        });
+      }
+    });
+  }
+
+  const addProfileForm = document.getElementById('add-profile-form');
+  if (addProfileForm) {
+    addProfileForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!currentUser) {
+        alert("You must be logged in to create a profile.");
+        return;
+      }
+      
+      const submitBtn = document.querySelector('#add-profile-form button[type="submit"]');
+      const originalText = submitBtn.innerText;
+      submitBtn.innerText = "Saving...";
+      submitBtn.disabled = true;
+
+      const name = document.getElementById('profile-name').value;
+      const age = document.getElementById('profile-age').value;
+      const gender = document.getElementById('profile-gender').value;
+      
+      try {
+        await addDoc(collection(db, "profiles"), {
+          userId: currentUser.uid,
+          name: name,
+          age: age,
+          gender: gender,
+          photo: photoDataUrl || '',
+          createdAt: new Date().toISOString()
+        });
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("Failed to create profile. " + error.message);
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(regs => {for(let reg of regs) {reg.unregister();}});}</script></body></html>

@@ -1,0 +1,11 @@
+﻿{
+  "projectId": "sahaya-ai",
+  "appId": "1:648285547085:web:756f7440911378888eca04",
+  "storageBucket": "sahaya-ai.firebasestorage.app",
+  "apiKey": "AIzaSyAsSMEzG_Up6pJwzBUSD8oW5VuY5XhmCuA",
+  "authDomain": "sahaya-ai.firebaseapp.com",
+  "messagingSenderId": "648285547085",
+  "measurementId": "G-FQ3F0N3HE0",
+  "projectNumber": "648285547085",
+  "version": "2"
+}
