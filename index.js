@@ -56,7 +56,7 @@ onAuthStateChanged(auth, async (user) => {
 
       card.innerHTML = `
         <div class="avatar-glow p-1.5 rounded-full w-24 h-24 mb-4">
-          <img alt="${profile.name}" class="w-full h-full object-cover rounded-full" src="${profile.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=366759&color=fff`}"/>
+          <img alt="${profile.name}" class="w-full h-full object-cover rounded-full" src="${profile.photo || 'https://lh3.googleusercontent.com/aida-public/AB6AXuDdarDxE-KV2ig5BT7i5gAeOJf0EIGutWmq5I-sV9xHUI2g4KFZlpcZ9wFogbAtTksACrLZwdisiz2VeNYzLRUq9x3RxGf9sql2PUltfTct5B4OgLK3BPM9luOD7H5tvmw2embj-pzrns_Jgyi_MjGs5aZ5eet_c_Flw85mB86bR-v8-7drhUrhHBKCY9I8WJURrTpiJQH2cQhSB65iCSkwMlHZT4XT_PefL1CGOVF4t0iVMBOyE2y08Qbu27Rpid-EahsQ73Vxu0s'}"/>
         </div>
         <h3 class="font-headline font-bold text-xl text-on-primary-container leading-tight">${profile.name}</h3>
         <p class="text-on-primary-container/80 font-medium text-sm mt-1">Age: ${profile.age}</p>

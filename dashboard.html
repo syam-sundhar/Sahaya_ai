@@ -2,7 +2,7 @@
 
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
 <title>Sahaya - Welcome</title>
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -92,16 +92,30 @@
 <style>
         body {
             min-height: max(884px, 100dvh);
+            touch-action: manipulation;
+            overflow-x: hidden;
+            overscroll-behavior-y: none;
+        }
+        * {
+            box-sizing: border-box;
         }
     </style>
-<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+</head>
 <body class="bg-sahaya-gradient min-h-screen font-body text-on-surface flex flex-col">
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="fixed inset-0 z-[100] bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-300">
+    <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+    <p class="mt-4 font-bold text-primary font-headline tracking-widest uppercase">Loading Profile</p>
+</div>
 <!-- TopAppBar -->
 <header class="bg-[#F8EBE9] dark:bg-slate-900 docked full-width top-0 z-50 flex justify-between items-center px-6 py-4 w-full no-border tonal-shift-bg-surface-container flat no-shadows">
 <div class="flex items-center gap-4">
 <button class="text-[#366759] dark:text-[#7CAE9E] hover:bg-[#CFECE0]/50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200 ease-in-out p-2 rounded-full flex items-center gap-1" onclick="window.location.href='index.html'">
 <span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
 <span class="text-sm font-semibold sm:inline hidden">Back</span>
+</button>
+<button id="tts-toggle" class="text-[#366759] dark:text-[#7CAE9E] hover:bg-[#CFECE0]/50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200 ease-in-out p-2 rounded-full flex items-center" title="Toggle Voice">
+<span class="material-symbols-outlined" id="tts-icon">volume_up</span>
 </button>
 <h1 class="font-['Manrope'] font-bold text-xl tracking-tight text-2xl font-extrabold text-[#366759] dark:text-[#7CAE9E] tracking-tighter">Sahaya</h1>
 </div>
@@ -129,12 +143,39 @@
   <!-- Primary Action Buttons Container -->
   <div class="w-full flex flex-col sm:flex-row gap-4">
     <!-- Check Symptoms -->
-    <button class="button-gradient flex-1 flex flex-col items-center justify-center p-6 rounded-2xl shadow-[0_8px_30px_rgb(54,103,89,0.15)] active:scale-[0.98] transition-all duration-200 group" onclick="window.location.href='check symptoms page.html'">
+    <button class="button-gradient flex-1 flex flex-col items-center justify-center p-6 rounded-2xl shadow-[0_8px_30px_rgb(54,103,89,0.15)] active:scale-[0.98] transition-all duration-200 group" onclick="startFreshChat()">
       <div class="bg-white/20 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform">
         <span class="material-symbols-outlined text-white text-3xl" data-icon="medical_services" style="font-variation-settings: 'FILL' 1;">medical_services</span>
       </div>
       <span class="text-white font-headline text-lg font-bold">Check Symptoms</span>
     </button>
+    
+    <script>
+        function startFreshChat() {
+            localStorage.removeItem('sahaya_chat_messages');
+            window.location.href = 'check symptoms page.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const ttsToggle = document.getElementById('tts-toggle');
+            const ttsIcon = document.getElementById('tts-icon');
+            
+            if(localStorage.getItem('sahaya_tts_enabled') === 'false') {
+                ttsIcon.textContent = 'volume_off';
+            }
+            
+            ttsToggle.addEventListener('click', () => {
+                const current = localStorage.getItem('sahaya_tts_enabled');
+                if (current === 'false') {
+                    localStorage.setItem('sahaya_tts_enabled', 'true');
+                    ttsIcon.textContent = 'volume_up';
+                } else {
+                    localStorage.setItem('sahaya_tts_enabled', 'false');
+                    ttsIcon.textContent = 'volume_off';
+                }
+            });
+        });
+    </script>
     <!-- View Results -->
     <button class="bg-surface-container-lowest flex-1 flex flex-col items-center justify-center p-6 rounded-2xl shadow-[0_4px_15px_rgb(32,26,25,0.05)] border border-primary-container/20 active:scale-[0.98] transition-all duration-200 group" onclick="window.location.href='results.html'">
       <div class="bg-primary-container/10 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform">
@@ -200,7 +241,12 @@
            History
         </button>
       </div>
-      <div class="space-y-3">
+      
+      <!-- Visually Appealing Progress Bars appended dynamically -->
+      <div id="blood-chart-container" class="space-y-4 mb-4 px-1">
+      </div>
+      
+      <div class="space-y-3 pt-2 border-t border-surface-dim">
         <div class="flex gap-2">
           <input id="blood-sugar" type="text" placeholder="Blood Sugar (mg/dL)" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
           <input id="hemoglobin" type="text" placeholder="Hemoglobin (g/dL)" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
@@ -209,6 +255,30 @@
           <input id="blood-amount" type="text" placeholder="Amount of Blood (e.g., 450ml)" class="w-full bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
         </div>
         <button id="blood-submit-btn" class="w-full bg-primary/10 text-primary font-bold text-sm py-3 rounded-xl hover:bg-primary/20 transition-all active:scale-95">Save Blood Details</button>
+      </div>
+    </div>
+
+    <!-- Medical Files Section -->
+    <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-primary-container/20">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_special</span>
+          </div>
+          <div>
+            <h4 class="font-headline font-bold text-on-surface">Medical Records</h4>
+            <p class="text-xs text-on-surface-variant">Securely store your files</p>
+          </div>
+        </div>
+        <button id="add-medical-file-btn" class="text-xs bg-primary text-white font-bold px-3 py-1.5 rounded-lg active:scale-95 transition-transform flex items-center gap-1 shadow-sm">
+           <span class="material-symbols-outlined text-[14px]">upload_file</span>
+           Add File
+        </button>
+        <input type="file" id="medical-file-input" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+      </div>
+
+      <div id="medical-files-container" class="grid grid-cols-1 gap-3 px-1 mt-2">
+          <!-- Files dynamically added here -->
       </div>
     </div>
   </div>
@@ -223,4 +293,4 @@
 <script src="translate.js"></script>
 <script type="module" src="dashboard.js"></script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js");}</script></body></html>
+</body></html>

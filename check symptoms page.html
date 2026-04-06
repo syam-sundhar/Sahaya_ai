@@ -2,7 +2,7 @@
 
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
 <title>SAHAYA - Symptom Check</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
@@ -92,9 +92,13 @@
         }
         body {
           min-height: max(884px, 100dvh);
+          touch-action: manipulation;
+          overflow-x: hidden;
+          overscroll-behavior-y: none;
         }
+        * { box-sizing: border-box; }
     </style>
-<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+</head>
 <body class="bg-background text-on-background font-body min-h-screen flex flex-col">
 <!-- TopAppBar -->
 <header class="bg-[#F8EBE9] dark:bg-stone-900 flex justify-between items-center px-6 py-4 w-full sticky top-0 z-50">
@@ -173,7 +177,7 @@
 </div>
 </div>
 </div>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").then(reg => console.log("SW Registered", reg)).catch(err => console.log("SW Failed", err));}</script></body>
+</body>
 <script>
     const SUPABASE_URL = "https://zglcrgarasocrhkchcvl.supabase.co/functions/v1/sahaya-chat";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGNyZ2FyYXNvY3Joa2NoY3ZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDcxMDksImV4cCI6MjA5MDE4MzEwOX0.B6HwAdEBLa_1Ql20Z753ntNKXxoeLXzaLkdcBydsiHg";
@@ -246,6 +250,8 @@
 
     // TTS
     function speakText(text) {
+        if (localStorage.getItem('sahaya_tts_enabled') === 'false') return;
+        
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel(); // Cancel any ongoing speech
             const utterance = new SpeechSynthesisUtterance(text);
@@ -270,7 +276,12 @@
                 const parsed = JSON.parse(savedChat);
                 if (parsed && parsed.length > 0) {
                     messages = parsed;
-                    messages.forEach(msg => addMessageToUI(msg.role, msg.content, true));
+                    messages.forEach(msg => {
+                        // don't show system messages in UI
+                        if (msg.role !== 'system') {
+                            addMessageToUI(msg.role, msg.content, true);
+                        }
+                    });
                     shouldFetchInitial = false;
                     
                     // Re-scroll to bottom after render
@@ -282,6 +293,21 @@
         }
         
         if (shouldFetchInitial) {
+            // Inject context on fresh start
+            const healthContext = localStorage.getItem('sahaya_health_context');
+            let infoStr = "";
+            if (healthContext) {
+                try {
+                    const profile = JSON.parse(healthContext);
+                    infoStr = `Patient Profile: Name=${profile.name||'Unknown'}, Age=${profile.age||'Unknown'}, Blood Group=${profile.bloodGroup||'Unknown'}. Known Issues: ${profile.conditions||'None'}.`;
+                } catch(e) {}
+            }
+            if (infoStr) {
+                messages.push({
+                    role: 'system',
+                    content: `You are Sahaya, a helpful health assistant. ${infoStr} Please keep it brief. Greet the patient briefly in ${langName}.`
+                });
+            }
             fetchAIResponse();
         }
     });
@@ -351,12 +377,18 @@
             localStorage.setItem('sahaya_chat_messages', JSON.stringify(messages));
             
             if (data.finished) {
+                // Compress chat for lightweight storage (remove system, map roles to u/a)
+                const lightweightChat = messages
+                    .filter(m => m.role !== 'system')
+                    .map(m => ({ r: m.role === 'user' ? 'u' : 'a', c: m.content }));
+
                 const assessmentResult = {
                     riskLevel: data.riskLevel,
                     summary: data.summary,
                     content: data.content,
                     dos: data.dos || [],
-                    donts: data.donts || []
+                    donts: data.donts || [],
+                    chatLog: lightweightChat
                 };
                 localStorage.setItem('sahaya_assessment_result', JSON.stringify(assessmentResult));
                 
@@ -441,5 +473,4 @@
         // Voices loaded
     };
 </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").then(reg => console.log("SW Registered", reg)).catch(err => console.log("SW Failed", err));}</script></body>
 </html>

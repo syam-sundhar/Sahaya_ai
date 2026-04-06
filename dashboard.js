@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAsSMEzG_Up6pJwzBUSD8oW5VuY5XhmCuA",
@@ -15,6 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 const urlParams = new URLSearchParams(window.location.search);
 let profileId = urlParams.get('id');
@@ -46,6 +48,10 @@ onAuthStateChanged(auth, async (user) => {
     if (docSnap.exists() && docSnap.data().userId === user.uid) {
       currentProfileData = docSnap.data();
       populateProfileUI(currentProfileData);
+      
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) overlay.style.display = 'none';
+      
     } else {
       alert("Profile not found or access denied.");
       window.location.href = 'index.html';
@@ -57,8 +63,11 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 function populateProfileUI(data) {
+  // Store context for AI use
+  localStorage.setItem('sahaya_health_context', JSON.stringify(data));
+  
   // Basic Details
-  const photoUrl = data.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'User')}&background=366759&color=fff`;
+  const photoUrl = data.photo || 'https://lh3.googleusercontent.com/aida-public/AB6AXuDdarDxE-KV2ig5BT7i5gAeOJf0EIGutWmq5I-sV9xHUI2g4KFZlpcZ9wFogbAtTksACrLZwdisiz2VeNYzLRUq9x3RxGf9sql2PUltfTct5B4OgLK3BPM9luOD7H5tvmw2embj-pzrns_Jgyi_MjGs5aZ5eet_c_Flw85mB86bR-v8-7drhUrhHBKCY9I8WJURrTpiJQH2cQhSB65iCSkwMlHZT4XT_PefL1CGOVF4t0iVMBOyE2y08Qbu27Rpid-EahsQ73Vxu0s';
   sessionStorage.setItem('currentProfilePhoto', photoUrl);
   
   document.getElementById('header-profile-img').src = photoUrl;
@@ -79,6 +88,7 @@ function populateProfileUI(data) {
       const sortedHistory = [...data.bloodHistory].sort((a,b) => new Date(b.date) - new Date(a.date));
       const latest = sortedHistory[0];
       fillBloodInputs(latest);
+      renderBloodChart(sortedHistory);
   } else if (data.bloodDetails) {
       // Legacy support before we added bloodHistory
       fillBloodInputs(data.bloodDetails);
@@ -87,6 +97,50 @@ function populateProfileUI(data) {
   // Weight tracking
   const weightHistory = data.weightHistory || {}; // { 'YYYY-MM': weight }
   renderWeightChart(weightHistory);
+  
+  // Medical Files
+  const medicalFiles = data.medicalFiles || [];
+  renderMedicalFiles(medicalFiles);
+}
+
+function renderBloodChart(bloodHistory) {
+    const chartContainer = document.getElementById('blood-chart-container');
+    if (!chartContainer) return;
+    
+    if (!bloodHistory || bloodHistory.length === 0) {
+        chartContainer.innerHTML = '';
+        return;
+    }
+    
+    const latest = bloodHistory[0];
+    
+    // sugar (normal is < 140, max ~300)
+    const sugarVal = parseFloat(latest.sugar) || 0;
+    const sugarPct = Math.min((sugarVal / 300) * 100, 100);
+    // hb (normal 12-16, max ~20)
+    const hbVal = parseFloat(latest.hemoglobin) || 0;
+    const hbPct = Math.min((hbVal / 20) * 100, 100);
+    
+    chartContainer.innerHTML = `
+        <div class="flex flex-col gap-1">
+            <div class="flex justify-between text-xs font-bold">
+                <span class="text-on-surface">Blood Sugar</span>
+                <span class="text-primary">${latest.sugar||'--'} <span class="opacity-70 text-[10px]">mg/dL</span></span>
+            </div>
+            <div class="w-full h-2 bg-surface-dim rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-[#BFF5F5] to-[#7CAE9E] rounded-full" style="width: ${sugarPct}%"></div>
+            </div>
+        </div>
+        <div class="flex flex-col gap-1 mt-2">
+            <div class="flex justify-between text-xs font-bold">
+                <span class="text-on-surface">Hemoglobin</span>
+                <span class="text-[#ba1a1a]">${latest.hemoglobin||'--'} <span class="opacity-70 text-[10px]">g/dL</span></span>
+            </div>
+            <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-[#FFDAD6] to-[#ba1a1a] rounded-full shadow-sm" style="width: ${hbPct}%"></div>
+            </div>
+        </div>
+    `;
 }
 
 function fillBloodInputs(record) {
@@ -213,6 +267,9 @@ document.getElementById('blood-submit-btn').addEventListener('click', async func
     if(!currentProfileData) currentProfileData = {};
     if(!currentProfileData.bloodHistory) currentProfileData.bloodHistory = [];
     currentProfileData.bloodHistory.push(newRecord);
+    
+    const sortedHistory = [...currentProfileData.bloodHistory].sort((a,b) => new Date(b.date) - new Date(a.date));
+    renderBloodChart(sortedHistory);
 
     this.innerHTML = '<span class="material-symbols-outlined text-sm align-middle mr-1">check</span> Details Saved';
     setTimeout(() => {
@@ -226,3 +283,112 @@ document.getElementById('blood-submit-btn').addEventListener('click', async func
     this.disabled = false;
   }
 });
+
+// Medical Files Logic
+const addMedicalFileBtn = document.getElementById('add-medical-file-btn');
+const medicalFileInput = document.getElementById('medical-file-input');
+const medicalFilesContainer = document.getElementById('medical-files-container');
+
+addMedicalFileBtn.addEventListener('click', () => {
+    medicalFileInput.click();
+});
+
+medicalFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file || !profileId) return;
+
+    let fileName = prompt("Enter a name for this record:", file.name);
+    if (fileName === null) {
+        medicalFileInput.value = ''; // cancelled
+        return;
+    }
+    if (fileName.trim() === '') fileName = file.name;
+
+    const originalBtnHtml = addMedicalFileBtn.innerHTML;
+    addMedicalFileBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">refresh</span> Uploading';
+    addMedicalFileBtn.disabled = true;
+
+    try {
+        const fileRef = ref(storage, `profiles/${profileId}/medical_files/${Date.now()}_${file.name}`);
+        
+        // Add a 10 second timeout in case Firebase Storage bucket is not initialized
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("UPLOAD_TIMEOUT")), 10000));
+        await Promise.race([uploadBytes(fileRef, file), timeoutPromise]);
+        
+        const url = await getDownloadURL(fileRef);
+
+        const newFileRecord = {
+            name: fileName,
+            url: url,
+            date: new Date().toISOString(),
+            type: file.type
+        };
+
+        await updateDoc(doc(db, "profiles", profileId), {
+            medicalFiles: arrayUnion(newFileRecord)
+        });
+
+        if(!currentProfileData) currentProfileData = {};
+        if(!currentProfileData.medicalFiles) currentProfileData.medicalFiles = [];
+        currentProfileData.medicalFiles.push(newFileRecord);
+        
+        renderMedicalFiles(currentProfileData.medicalFiles);
+
+        addMedicalFileBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span> Added';
+        setTimeout(() => {
+            addMedicalFileBtn.innerHTML = originalBtnHtml;
+            addMedicalFileBtn.disabled = false;
+        }, 2000);
+
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        if (error.message === "UPLOAD_TIMEOUT") {
+             alert("Upload timed out! Please ensure you have clicked 'Get Started' under Firebase Storage in the Firebase Console and your Storage Rules allow uploads.");
+        } else {
+             alert("Failed to upload the file to cloud storage.");
+        }
+        addMedicalFileBtn.innerHTML = originalBtnHtml;
+        addMedicalFileBtn.disabled = false;
+    } finally {
+        medicalFileInput.value = ''; // Reset input
+    }
+});
+
+function renderMedicalFiles(files) {
+    if (!files || files.length === 0) {
+        medicalFilesContainer.innerHTML = '<div class="text-xs font-medium text-on-surface-variant text-center py-4">No files added yet.</div>';
+        return;
+    }
+
+    // Sort files by date descending
+    const sortedFiles = [...files].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    medicalFilesContainer.innerHTML = '';
+    sortedFiles.forEach(f => {
+        let icon = "draft";
+        if (f.type.includes('pdf')) icon = "picture_as_pdf";
+        else if (f.type.includes('image')) icon = "image";
+        
+        const d = new Date(f.date);
+        const dateStr = d.toLocaleDateString();
+
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between bg-surface-container rounded-xl p-3 border border-outline-variant/30";
+        div.innerHTML = `
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-primary">${icon}</span>
+                </div>
+                <div class="min-w-0">
+                    <h5 class="text-sm font-bold text-on-surface truncate">${f.name}</h5>
+                    <p class="text-[10px] text-on-surface-variant">${dateStr}</p>
+                </div>
+            </div>
+            <a href="${f.url}" target="_blank" class="text-primary hover:bg-primary/10 p-2 rounded-lg transition-colors flex items-center shrink-0" title="View File">
+                <span class="material-symbols-outlined">visibility</span>
+            </a>
+        `;
+        medicalFilesContainer.appendChild(div);
+    });
+}
+

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
   <title>SAHAYA - Choose Language</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -31,8 +31,8 @@
     .lang-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(54,103,89,0.15); }
     .lang-card.active { border-color: #366759 !important; background: #b9eddc !important; }
   </style>
-<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
-<body class="font-body text-on-surface min-h-screen flex flex-col">
+</head>
+<body class="font-body text-on-surface min-h-screen flex flex-col notranslate" translate="no">
 
   <!-- Header -->
   <header class="bg-[#F8EBE9]/90 backdrop-blur-md flex justify-between items-center px-6 py-4 w-full sticky top-0 z-50">
@@ -61,9 +61,7 @@
     <div class="grid grid-cols-2 gap-4" id="lang-grid"></div>
   </main>
 
-  <div id="google_translate_element" style="display:none;"></div>
-  <script src="translate.js"></script>
-  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <!-- No translation scripts on this page -->
 
   <script>
     const LANGUAGES = [
@@ -89,8 +87,8 @@
         (isActive ? 'active border-[#366759] bg-[#b9eddc]' : 'border-transparent bg-white/80');
       btn.innerHTML =
         '<div class="text-2xl mb-2">' + lang.flag + '</div>' +
-        '<div class="font-headline font-bold text-xl text-[#366759]">' + lang.native + '</div>' +
-        '<div class="text-sm text-on-surface-variant font-medium">' + lang.name + '</div>' +
+        '<div class="font-headline font-bold text-xl text-[#366759]">' + lang.name + '</div>' +
+        '<div class="text-sm text-on-surface-variant font-medium">' + lang.native + '</div>' +
         (isActive ? '<div class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[#366759] bg-[#366759]/10 px-2 py-1 rounded-full"><span class="material-symbols-outlined" style="font-size:14px;">check</span> Active</div>' : '');
       btn.onclick = function() { selectLang(lang.code); };
       grid.appendChild(btn);
@@ -127,5 +125,5 @@
       window.location.href = ret;
     }
   </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").then(reg => console.log("SW Registered", reg)).catch(err => console.log("SW Failed", err));}</script></body>
+</body>
 </html>

@@ -81,23 +81,14 @@ function displayResult(data) {
     // Hide Scanner
     scannerView.classList.add('hidden');
     
-    // Quick formatter for text lines into bullet points
-    const formatText = (text) => {
-        if (!text) return "Not Specified";
-        return text.split('\n')
-            .filter(line => line.trim().length > 0)
-            .map(line => `<span class="block mb-2">• ${line.replace(/\*\*/g, '').trim()}</span>`)
-            .join("");
-    };
-
     // Populate Data
     resName.innerText = data.name || "Unknown Medicine";
-    resPurpose.innerHTML = formatText(data.purpose);
-    resUsage.innerHTML = formatText(data.usage);
+    resPurpose.innerText = data.purpose || "Not Specified";
+    resUsage.innerText = data.usage || "Not Specified";
 
     if (data.warning) {
         warningBanner.classList.remove('hidden');
-        resWarning.innerHTML = formatText(data.warning);
+        resWarning.innerText = data.warning;
     } else {
         warningBanner.classList.add('hidden');
     }
