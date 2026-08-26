@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sahaya brand palette (matches the web theme in www/) -->
+    <color name="colorPrimary">#366759</color>
+    <color name="colorPrimaryDark">#0C4236</color>
+    <color name="colorAccent">#7CAE9E</color>
+</resources>

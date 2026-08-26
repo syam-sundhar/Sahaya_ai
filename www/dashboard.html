@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sahaya - Welcome</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface": "#201a19",
+              "surface-container": "#f8ebe9",
+              "on-tertiary-fixed-variant": "#164e4f",
+              "secondary": "#815248",
+              "on-tertiary-fixed": "#002020",
+              "primary": "#366759",
+              "primary-fixed": "#b9eddc",
+              "secondary-container": "#fec0b3",
+              "inverse-on-surface": "#fbeeec",
+              "surface-container-lowest": "#ffffff",
+              "on-surface-variant": "#404945",
+              "on-secondary-container": "#7a4c42",
+              "background": "#fff8f7",
+              "on-error-container": "#93000a",
+              "surface-tint": "#366759",
+              "on-background": "#201a19",
+              "secondary-fixed-dim": "#f5b8ab",
+              "inverse-surface": "#362f2e",
+              "surface-container-low": "#fef1ef",
+              "surface-container-highest": "#ece0de",
+              "surface": "#fff8f7",
+              "on-secondary-fixed": "#32110b",
+              "surface-bright": "#fff8f7",
+              "tertiary-container": "#79adad",
+              "inverse-primary": "#9ed1c0",
+              "on-primary-fixed": "#002019",
+              "tertiary": "#326667",
+              "outline-variant": "#c0c8c4",
+              "outline": "#707975",
+              "on-primary-container": "#0c4236",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#9bd0d0",
+              "error": "#ba1a1a",
+              "on-primary": "#ffffff",
+              "surface-variant": "#ece0de",
+              "primary-fixed-dim": "#9ed1c0",
+              "on-primary-fixed-variant": "#1d4f42",
+              "secondary-fixed": "#ffdad3",
+              "primary-container": "#7cae9e",
+              "on-secondary-fixed-variant": "#663b32",
+              "surface-dim": "#e4d7d5",
+              "surface-container-high": "#f2e5e3",
+              "on-tertiary": "#ffffff",
+              "on-secondary": "#ffffff",
+              "on-tertiary-container": "#014142",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#b7ecec"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .bg-sahaya-gradient {
+            background: linear-gradient(135deg, #F8EBE9 0%, #CFECE0 100%);
+        }
+        .button-gradient {
+            background: linear-gradient(135deg, #366759 0%, #7CAE9E 100%);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+<body class="bg-sahaya-gradient min-h-screen font-body text-on-surface flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-[#F8EBE9] dark:bg-slate-900 docked full-width top-0 z-50 flex justify-between items-center px-6 py-4 w-full no-border tonal-shift-bg-surface-container flat no-shadows">
+<div class="flex items-center gap-4">
+<button class="text-[#366759] dark:text-[#7CAE9E] hover:bg-[#CFECE0]/50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200 ease-in-out p-2 rounded-full flex items-center gap-1" onclick="window.location.href='index.html'">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+<span class="text-sm font-semibold sm:inline hidden">Back</span>
+</button>
+<h1 class="font-['Manrope'] font-bold text-xl tracking-tight text-2xl font-extrabold text-[#366759] dark:text-[#7CAE9E] tracking-tighter">Sahaya</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#BFF5F5] to-[#CFECE0] p-0.5">
+<img id="header-profile-img" alt="User Profile" class="w-full h-full rounded-full object-cover" src=""/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-start px-6 pt-6 pb-24 space-y-8 w-full max-w-lg mx-auto">
+  
+  <!-- User Profile Section -->
+  <div class="w-full bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-primary-container/20 flex items-center gap-5">
+    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#BFF5F5] to-[#CFECE0] p-1 shrink-0 shadow-sm">
+      <img id="main-profile-img" alt="Profile" class="w-full h-full rounded-full object-cover" src=""/>
+    </div>
+    <div class="flex-1">
+      <h2 id="main-profile-name" class="font-headline text-2xl font-extrabold text-primary tracking-tight"></h2>
+      <div class="flex flex-wrap gap-2 mt-2">
+        <span id="main-profile-age" class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-md"></span>
+        <span id="main-profile-gender" class="bg-secondary/10 text-secondary text-xs font-bold px-2 py-1 rounded-md" style="display:none;"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Action Buttons Container -->
+  <div class="w-full flex flex-col sm:flex-row gap-4">
+    <!-- Check Symptoms -->
+    <button class="button-gradient flex-1 flex flex-col items-center justify-center p-6 rounded-2xl shadow-[0_8px_30px_rgb(54,103,89,0.15)] active:scale-[0.98] transition-all duration-200 group" onclick="window.location.href='check-symptoms.html'">
+      <div class="bg-white/20 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-white text-3xl" data-icon="medical_services" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+      </div>
+      <span class="text-white font-headline text-lg font-bold">Check Symptoms</span>
+    </button>
+    <!-- View Results -->
+    <button class="bg-surface-container-lowest flex-1 flex flex-col items-center justify-center p-6 rounded-2xl shadow-[0_4px_15px_rgb(32,26,25,0.05)] border border-primary-container/20 active:scale-[0.98] transition-all duration-200 group" onclick="window.location.href='results.html'">
+      <div class="bg-primary-container/10 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-primary text-3xl" data-icon="assignment_turned_in" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+      </div>
+      <span class="text-primary font-headline text-lg font-bold">View Results</span>
+    </button>
+  </div>
+
+  <!-- Special Sections -->
+  <div class="w-full space-y-4">
+    <h3 class="font-headline text-xl font-bold text-on-surface">Health Metrics</h3>
+    
+    <!-- Weight Section -->
+    <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-primary-container/20 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">monitor_weight</span>
+          </div>
+          <div>
+            <h4 class="font-headline font-bold text-on-surface">Weight Dashboard</h4>
+            <p class="text-xs text-on-surface-variant">Track your progress</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Vertical Bar Graph: Last 6 Months -->
+      <div class="bg-surface-container rounded-xl p-4 pb-2 flex flex-col gap-4">
+        <div class="flex justify-between items-end mb-2">
+           <div>
+             <p id="current-weight-display" class="font-headline text-2xl font-black text-primary">--<span class="text-sm font-bold text-primary/70 ml-1">kg</span></p>
+             <p class="text-xs text-on-surface-variant font-medium">Current Weight</p>
+           </div>
+        </div>
+        
+        <!-- Chart Area -->
+        <div id="weight-chart-container" class="h-32 flex items-end justify-between gap-2 px-1">
+          <!-- Dynamic bars will be injected here -->
+        </div>
+      </div>
+
+      <div class="flex gap-2 relative border-t border-surface-dim pt-4 mt-2">
+        <input type="number" placeholder="Enter new weight" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface font-medium" id="weight-input">
+        <button id="weight-submit-btn" class="bg-primary text-white font-bold text-sm px-4 py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1 w-24">Update</button>
+      </div>
+    </div>
+
+    <!-- Blood Details Section -->
+    <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-primary-container/20">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-[#ba1a1a]/10 rounded-full flex items-center justify-center text-[#ba1a1a]">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bloodtype</span>
+          </div>
+          <div>
+            <h4 class="font-headline font-bold text-on-surface">Blood Details</h4>
+            <p class="text-xs text-on-surface-variant">Update every 3-6 months</p>
+          </div>
+        </div>
+        <button onclick="window.location.href='blood_details_history.html'" class="text-xs bg-[#ba1a1a]/10 text-[#ba1a1a] font-bold px-3 py-1.5 rounded-lg active:scale-95 transition-transform flex items-center gap-1 hover:bg-[#ba1a1a]/20">
+           <span class="material-symbols-outlined text-[14px]">history</span>
+           History
+        </button>
+      </div>
+      <div class="space-y-3">
+        <div class="flex gap-2">
+          <input id="blood-sugar" type="number" inputmode="decimal" min="1" max="2000" placeholder="Blood Sugar (mg/dL)" aria-label="Blood sugar in milligrams per deciliter" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
+          <input id="hemoglobin" type="number" inputmode="decimal" min="1" max="30" step="0.1" placeholder="Hemoglobin (g/dL)" aria-label="Hemoglobin in grams per deciliter" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
+        </div>
+        <div>
+          <input id="blood-amount" type="text" maxlength="40" placeholder="Amount of Blood (e.g., 450ml)" aria-label="Amount of blood donated, e.g. 450ml" class="w-full bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
+        </div>
+        <button id="blood-submit-btn" class="w-full bg-primary/10 text-primary font-bold text-sm py-3 rounded-xl hover:bg-primary/20 transition-all active:scale-95">Save Blood Details</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+<!-- BottomNavBar -->
+<!-- Translate Button -->
+<button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page" class="fixed top-3 z-[9999] right-16 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
+  <span class="material-symbols-outlined">translate</span>
+</button>
+<div id="google_translate_element" style="display:none;"></div>
+<script src="util.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app-config.js"></script>
+<script src="translate.js"></script>
+<script type="module" src="dashboard.js"></script>
+</body></html>

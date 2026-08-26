@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SAHAYA - Health Results</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#fff8f7",
+                        "on-surface-variant": "#404945",
+                        "on-tertiary-container": "#014142",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#79adad",
+                        "on-tertiary-fixed-variant": "#164e4f",
+                        "on-primary-fixed": "#002019",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#326667",
+                        "tertiary-fixed-dim": "#9bd0d0",
+                        "on-primary-container": "#0c4236",
+                        "surface-container-highest": "#ece0de",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#fbeeec",
+                        "secondary-container": "#fec0b3",
+                        "tertiary-fixed": "#b7ecec",
+                        "on-background": "#201a19",
+                        "inverse-surface": "#362f2e",
+                        "secondary": "#815248",
+                        "secondary-fixed": "#ffdad3",
+                        "surface-variant": "#ece0de",
+                        "on-surface": "#201a19",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#e4d7d5",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#366759",
+                        "surface": "#fff8f7",
+                        "on-primary-fixed-variant": "#1d4f42",
+                        "on-secondary-container": "#7a4c42",
+                        "outline": "#707975",
+                        "inverse-primary": "#9ed1c0",
+                        "surface-bright": "#fff8f7",
+                        "on-secondary-fixed-variant": "#663b32",
+                        "on-secondary-fixed": "#32110b",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#f2e5e3",
+                        "on-tertiary-fixed": "#002020",
+                        "surface-container-low": "#fef1ef",
+                        "primary-fixed-dim": "#9ed1c0",
+                        "outline-variant": "#c0c8c4",
+                        "primary-fixed": "#b9eddc",
+                        "secondary-fixed-dim": "#f5b8ab",
+                        "primary": "#366759",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#7cae9e",
+                        "surface-container": "#f8ebe9"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .bg-mesh {
+            background-color: #f8ebe9;
+            background-image:
+                radial-gradient(at 0% 0%, #cfece0 0px, transparent 50%),
+                radial-gradient(at 100% 0%, #fec0b3 0px, transparent 50%);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+
+<body
+    class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+    <!-- Top Navigation -->
+    <header
+        class="bg-[#F8EBE9]/80 backdrop-blur-md flex justify-between items-center px-6 py-4 w-full fixed top-0 z-50">
+        <div class="flex items-center gap-4">
+            <a id="results-back-link" aria-label="Back to dashboard"
+                class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors"
+                href="dashboard.html">
+                <span class="material-symbols-outlined text-primary" data-icon="arrow_back">arrow_back</span>
+            </a>
+            <h1 class="font-headline font-extrabold text-primary tracking-tight text-2xl">Sahaya</h1>
+        </div>
+        <div class="relative group">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#BFF5F5] to-[#CFECE0] p-0.5 shadow-sm">
+                <img id="header-profile-img" alt="User Profile" class="w-full h-full rounded-full object-cover"
+                    src="https://ui-avatars.com/api/?name=User&background=366759&color=fff" />
+            </div>
+        </div>
+    </header>
+    <main class="min-h-screen pt-24 pb-32 px-4 md:px-8 bg-mesh">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <!-- Result Overview Section -->
+            <section class="flex flex-col md:flex-row gap-6">
+                <!-- Result Heading -->
+                <div class="md:w-2/3">
+                    <h2 class="font-headline font-extrabold text-4xl text-on-surface tracking-tight mb-4">Screening
+                        Result</h2>
+                    <p class="text-lg text-on-surface-variant leading-relaxed font-medium">
+                        Based on your reported symptoms, we have categorized your current health status to help you
+                        decide on the next steps.
+                    </p>
+                </div>
+                <!-- Avatar Status Card -->
+                <div id="risk-container"
+                    class="md:w-1/3 bg-surface-container-lowest rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-sm">
+                    <div id="risk-icon-bg" class="w-24 h-24 rounded-full bg-gradient-to-br from-[#FFDAD6] to-[#FEC0B3] p-1 mb-4 transition-colors">
+                        <div class="w-full h-full rounded-full overflow-hidden border-4 border-white">
+                            <img id="status-avatar-img" alt="User Avatar" class="w-full h-full object-cover"
+                                src="https://ui-avatars.com/api/?name=User&background=366759&color=fff" />
+                        </div>
+                    </div>
+                    <span id="risk-text" class="text-sm font-label font-bold uppercase tracking-widest text-secondary">Status:
+                        Alert</span>
+                </div>
+            </section>
+            <!-- Warning State Card -->
+            <div id="summary-card"
+                class="bg-[#E69EA2]/20 backdrop-blur-md rounded-xl p-8 border-l-8 border-[#E69EA2] flex flex-col md:flex-row gap-8 items-start transition-colors">
+                <div class="p-4 bg-white/40 rounded-2xl">
+                    <span id="summary-icon" class="material-symbols-outlined text-[#ba1a1a] !text-5xl" data-icon="warning">warning</span>
+                </div>
+                <div class="flex-1">
+                    <h3 id="summary-title" class="font-headline font-bold text-2xl text-[#815248] mb-2">Analyzing Results...</h3>
+                    <p id="summary-content" class="text-lg text-on-surface leading-relaxed mb-6">
+                        Please wait while Sahaya finalizes your assessment.
+                    </p>
+                    <div id="dos-donts-container" class="flex flex-wrap gap-4">
+                        <!-- Dynamic dos and donts will be injected here -->
+                    </div>
+                </div>
+            </div>
+            <!-- Advice Section (Bento Grid Style) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div
+                    class="bg-surface-container-low rounded-xl p-6 hover:bg-primary-container/20 transition-colors cursor-pointer group">
+                    <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm">
+                        <span class="material-symbols-outlined text-primary" data-icon="medication">medication</span>
+                    </div>
+                    <h4 class="font-bold text-xl mb-2">Self-Care Advice</h4>
+                    <p class="text-on-surface-variant">Stay hydrated and maintain a balanced diet while tracking changes
+                        in pain levels every 4 hours.</p>
+                </div>
+                <div
+                    class="bg-surface-container-low rounded-xl p-6 hover:bg-primary-container/20 transition-colors cursor-pointer group">
+                    <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm">
+                        <span class="material-symbols-outlined text-primary"
+                            data-icon="local_hospital">local_hospital</span>
+                    </div>
+                    <h4 class="font-bold text-xl mb-2">Nearby Facilities</h4>
+                    <p class="text-on-surface-variant">There are 3 primary health centers within 5km that can provide
+                        immediate physical examination.</p>
+                </div>
+            </div>
+            <!-- Disclaimer -->
+            <div class="bg-surface-container-highest rounded-xl p-6 text-center">
+                <p class="text-on-surface-variant text-sm font-medium">
+                    <strong class="text-on-surface font-extrabold uppercase tracking-wide">MANDATORY
+                        DISCLAIMER:</strong> This is not a medical diagnosis. Please consult a doctor.
+                </p>
+            </div>
+            <!-- Primary Action -->
+            <div class="flex flex-col items-center gap-4 pb-8">
+                <button id="talk-to-doctor-btn"
+                    class="bg-gradient-to-r from-[#366759] to-[#7CAE9E] text-white px-12 py-5 rounded-xl font-headline font-bold text-xl shadow-lg hover:shadow-xl active:scale-95 transition-all flex items-center gap-3 min-w-[280px] justify-center">
+                    <span class="material-symbols-outlined" data-icon="video_call">video_call</span>
+                    Talk to Doctor
+                </button>
+                <p class="text-sm text-on-surface-variant font-medium opacity-80">Doctor consultations are coming soon.</p>
+            </div>
+        </div>
+    </main>
+    <!-- Bottom Navigation Shell -->
+    <script type="module">
+        import { auth, requireAuth } from "./auth.js";
+
+        const U = window.SAHAYA_UTIL;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await requireAuth(); // redirects to login.html when signed out
+
+            // Back link keeps the selected profile in the URL.
+            const backLink = document.getElementById('results-back-link');
+            const profileIdForNav = sessionStorage.getItem('currentProfileId');
+            if (backLink && profileIdForNav) {
+                backLink.href = 'dashboard.html?id=' + encodeURIComponent(profileIdForNav);
+            }
+
+            // "Talk to Doctor" is not wired to a real service yet — be honest about it.
+            const doctorBtn = document.getElementById('talk-to-doctor-btn');
+            if (doctorBtn) {
+                doctorBtn.addEventListener('click', () => {
+                    U.toast("Doctor consultations are coming soon. For emergencies, please call 108.", 'info', 5000);
+                });
+            }
+
+            const headerProfileImg = document.getElementById('header-profile-img');
+            const statusAvatarImg = document.getElementById('status-avatar-img');
+
+            const profileId = sessionStorage.getItem('currentProfileId') || '-';
+            // Offline-safe, scoped photo set by the dashboard for this user+profile.
+            const cachedPhoto = U.scopedGetItem('sahaya_profile_photo', user.uid, profileId)
+                || sessionStorage.getItem('currentProfilePhoto'); // legacy fallback
+            if (cachedPhoto) {
+                if (headerProfileImg) headerProfileImg.src = cachedPhoto;
+                if (statusAvatarImg) statusAvatarImg.src = cachedPhoto;
+            } else {
+                const local = U.avatarDataUrl('');
+                if (headerProfileImg) headerProfileImg.src = local;
+                if (statusAvatarImg) statusAvatarImg.src = local;
+            }
+
+            const resultStr = U.scopedGetItem('sahaya_result', user.uid, profileId);
+
+            const riskText = document.getElementById('risk-text');
+            const riskIconBg = document.getElementById('risk-icon-bg');
+            const summaryCard = document.getElementById('summary-card');
+            const summaryIcon = document.getElementById('summary-icon');
+            const summaryTitle = document.getElementById('summary-title');
+            const summaryContent = document.getElementById('summary-content');
+            const dosDontsContainer = document.getElementById('dos-donts-container');
+
+            if (!resultStr) {
+                // Show empty state instead of redirecting
+                riskText.textContent = "Status: Unknown";
+                riskText.className = 'text-sm font-label font-bold uppercase tracking-widest text-outline';
+                riskIconBg.className = 'w-24 h-24 rounded-full bg-gradient-to-br from-surface-variant to-surface-container-highest p-1 mb-4 transition-colors';
+
+                summaryCard.className = 'bg-surface-container-low backdrop-blur-md rounded-xl p-8 border-l-8 border-outline flex flex-col md:flex-row gap-8 items-start transition-colors';
+                summaryIcon.className = 'material-symbols-outlined text-outline !text-5xl';
+                summaryIcon.textContent = 'info';
+
+                summaryTitle.className = 'font-headline font-bold text-2xl text-on-surface mb-2';
+                summaryTitle.textContent = "No Recent Assessment";
+                summaryContent.innerHTML = "You haven't completed a symptom assessment recently. Please go to the <a href='check-symptoms.html' class='text-primary underline font-bold'>Check Symptoms</a> page to start one.";
+
+                dosDontsContainer.innerHTML = '';
+                return;
+            }
+
+            try {
+                const result = JSON.parse(resultStr);
+
+                // Update Risk Level
+                riskText.textContent = `Status: ${result.riskLevel}`;
+
+                if (String(result.riskLevel).toLowerCase() === 'high') {
+                    riskText.className = 'text-sm font-label font-bold uppercase tracking-widest text-[#ba1a1a]';
+                    riskIconBg.className = 'w-24 h-24 rounded-full bg-gradient-to-br from-[#FFDAD6] to-[#ffb4ab] p-1 mb-4 transition-colors';
+
+                    summaryCard.className = 'bg-[#E69EA2]/20 backdrop-blur-md rounded-xl p-8 border-l-8 border-[#ba1a1a] flex flex-col md:flex-row gap-8 items-start transition-colors';
+                    summaryIcon.className = 'material-symbols-outlined text-[#ba1a1a] !text-5xl';
+                    summaryIcon.textContent = 'e911_emergency';
+                    summaryTitle.className = 'font-headline font-bold text-2xl text-[#ba1a1a] mb-2';
+
+                } else if (String(result.riskLevel).toLowerCase() === 'moderate') {
+                    riskText.className = 'text-sm font-label font-bold uppercase tracking-widest text-[#815248]';
+                    riskIconBg.className = 'w-24 h-24 rounded-full bg-gradient-to-br from-[#FFDAD6] to-[#FEC0B3] p-1 mb-4 transition-colors';
+
+                    summaryCard.className = 'bg-[#E69EA2]/20 backdrop-blur-md rounded-xl p-8 border-l-8 border-[#E69EA2] flex flex-col md:flex-row gap-8 items-start transition-colors';
+                    summaryIcon.className = 'material-symbols-outlined text-[#ba1a1a] !text-5xl';
+                    summaryIcon.textContent = 'warning';
+                    summaryTitle.className = 'font-headline font-bold text-2xl text-[#815248] mb-2';
+                } else {
+                    riskText.className = 'text-sm font-label font-bold uppercase tracking-widest text-[#366759]';
+                    riskIconBg.className = 'w-24 h-24 rounded-full bg-gradient-to-br from-[#BFF5F5] to-[#CFECE0] p-1 mb-4 transition-colors';
+
+                    summaryCard.className = 'bg-[#CFECE0]/40 backdrop-blur-md rounded-xl p-8 border-l-8 border-[#7CAE9E] flex flex-col md:flex-row gap-8 items-start transition-colors';
+                    summaryIcon.className = 'material-symbols-outlined text-[#366759] !text-5xl';
+                    summaryIcon.textContent = 'health_and_safety';
+                    summaryTitle.className = 'font-headline font-bold text-2xl text-[#366759] mb-2';
+                }
+
+                // Update Summary
+                summaryTitle.textContent = result.summary;
+
+                // AI markdown → safe display. Escape FIRST, then add <br/> line breaks.
+                const cleanContent = result.content
+                    ? U.escapeHtml(String(result.content).replace(/\*\*/g, '')).replace(/\n/g, '<br/>')
+                    : '';
+                summaryContent.innerHTML = cleanContent;
+
+                // Update Dos and Donts — text injected via textContent only.
+                dosDontsContainer.innerHTML = ''; // clear static placeholder cards
+
+                const makeChip = (icon, iconColor, text, textColorClass) => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-white/60 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2';
+                    div.innerHTML =
+                        `<span class="material-symbols-outlined ${iconColor} !text-lg">${icon}</span>` +
+                        `<span class="${textColorClass}"></span>`;
+                    div.lastElementChild.textContent = String(text); // untrusted → textContent
+                    return div;
+                };
+
+                if (Array.isArray(result.dos)) {
+                    result.dos.forEach(dos => dosDontsContainer.appendChild(
+                        makeChip('check_circle', 'text-primary', dos, '')));
+                }
+                if (Array.isArray(result.donts)) {
+                    result.donts.forEach(dont => dosDontsContainer.appendChild(
+                        makeChip('cancel', 'text-[#ba1a1a]', dont, 'text-[#ba1a1a]')));
+                }
+
+            } catch (e) {
+                console.error("Error parsing assessment result", e);
+                U.toast("Couldn't display the saved assessment.", 'error');
+            }
+        });
+    </script>
+    <!-- Translate Button -->
+    <button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page" class="fixed top-3 z-[9999] right-4 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
+      <span class="material-symbols-outlined">translate</span>
+    </button>
+    <div id="google_translate_element" style="display:none;"></div>
+    <script src="util.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="app-config.js"></script>
+    <script src="translate.js"></script>
+    </body>
+
+</html>

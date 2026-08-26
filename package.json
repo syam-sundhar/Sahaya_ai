@@ -1,0 +1,23 @@
+{
+  "name": "stitch_duplicate_of_welcome_to_sahaya",
+  "version": "1.0.0",
+  "description": "Sahaya is a comprehensive, multi-lingual AI-powered health assistant and profile management web application. It allows users to track their everyday health metrics, manage multiple profiles under one account, and consult a smart AI to evaluate their symptoms in real-time.",
+  "main": "www/index.html",
+  "scripts": {
+    "sync": "cap sync android",
+    "android": "cap open android",
+    "apk": "cd android && gradlew.bat -I mirror.init.gradle assembleDebug"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/core": "^8.4.2",
+    "@capacitor-community/speech-recognition": "^7.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.4.2"
+  }
+}

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SAHAYA - Symptom Check</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "background": "#fff8f7",
+              "on-surface-variant": "#404945",
+              "on-tertiary-container": "#014142",
+              "error": "#ba1a1a",
+              "tertiary-container": "#79adad",
+              "on-tertiary-fixed-variant": "#164e4f",
+              "on-primary-fixed": "#002019",
+              "on-tertiary": "#ffffff",
+              "tertiary": "#326667",
+              "tertiary-fixed-dim": "#9bd0d0",
+              "on-primary-container": "#0c4236",
+              "surface-container-highest": "#ece0de",
+              "on-secondary": "#ffffff",
+              "inverse-on-surface": "#fbeeec",
+              "secondary-container": "#fec0b3",
+              "tertiary-fixed": "#b7ecec",
+              "on-background": "#201a19",
+              "inverse-surface": "#362f2e",
+              "secondary": "#815248",
+              "secondary-fixed": "#ffdad3",
+              "surface-variant": "#ece0de",
+              "on-surface": "#201a19",
+              "on-error": "#ffffff",
+              "surface-dim": "#e4d7d5",
+              "error-container": "#ffdad6",
+              "surface-tint": "#366759",
+              "surface": "#fff8f7",
+              "on-primary-fixed-variant": "#1d4f42",
+              "on-secondary-container": "#7a4c42",
+              "outline": "#707975",
+              "inverse-primary": "#9ed1c0",
+              "surface-bright": "#fff8f7",
+              "on-secondary-fixed-variant": "#663b32",
+              "on-secondary-fixed": "#32110b",
+              "on-primary": "#ffffff",
+              "surface-container-high": "#f2e5e3",
+              "on-tertiary-fixed": "#002020",
+              "surface-container-low": "#fef1ef",
+              "primary-fixed-dim": "#9ed1c0",
+              "outline-variant": "#c0c8c4",
+              "primary-fixed": "#b9eddc",
+              "secondary-fixed-dim": "#f5b8ab",
+              "primary": "#366759",
+              "on-error-container": "#93000a",
+              "surface-container-lowest": "#ffffff",
+              "primary-container": "#7cae9e",
+              "surface-container": "#f8ebe9"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.25rem", 
+              "lg": "0.5rem", 
+              "xl": "1.5rem", 
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            background: rgba(255, 248, 247, 0.7);
+            backdrop-filter: blur(20px);
+        }
+        .sound-wave-bar {
+            width: 3px;
+            background-color: white;
+            border-radius: 99px;
+            margin: 0 1px;
+        }
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-[#F8EBE9] dark:bg-stone-900 flex justify-between items-center px-6 py-4 w-full sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<a id="symptoms-back-link" aria-label="Back to dashboard" class="text-[#366759] dark:text-[#7CAE9E] hover:bg-[#CFECE0]/50 transition-colors p-2 rounded-full active:scale-95 active:duration-150 flex items-center" href="dashboard.html">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+<span class="ml-1 font-bold text-sm hidden sm:inline">BACK</span>
+</a>
+<h1 class="font-['Manrope'] font-black text-[#366759] dark:text-[#7CAE9E] tracking-widest text-2xl">SAHAYA</h1>
+</div>
+<div class="flex items-center gap-3">
+<div id="patient-block" class="text-right hidden sm:block">
+<p class="text-xs font-bold text-primary uppercase tracking-tighter">Current Patient</p>
+<p id="patient-name" class="text-sm font-semibold text-on-surface">&nbsp;</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#BFF5F5] to-[#CFECE0] p-0.5">
+<img id="patient-avatar" alt="Current patient profile" class="w-full h-full rounded-full object-cover border-2 border-white" src="logo.png"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col w-full max-w-4xl mx-auto px-4 pt-6 pb-32 relative">
+<!-- Context Header -->
+<div class="mb-8 text-center sm:text-left">
+<h2 class="font-headline text-3xl font-extrabold text-primary tracking-tight mb-2">Symptom Checker</h2>
+<p class="text-on-surface-variant max-w-md">Describe how you're feeling. Sahaya is here to assist with preliminary guidance and rural health support.</p>
+</div>
+<!-- Chat History Container -->
+<div id="chat-container" class="space-y-6 flex flex-col pb-6">
+    <!-- Messages will be injected here -->
+</div>
+<!-- Typing Indicator -->
+<div id="typing-indicator" class="hidden flex-col items-start gap-4 mt-4">
+    <div class="flex items-center gap-3 self-start">
+        <div class="bg-surface-container-low px-4 py-2 rounded-full flex items-center gap-2 shadow-sm border border-outline-variant/20">
+            <div class="flex gap-1">
+                <span class="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span>
+                <span class="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+                <span class="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+            </div>
+            <span class="text-xs font-semibold text-primary/80 italic">Analyzing...</span>
+        </div>
+    </div>
+</div>
+</main>
+<!-- Translate Button -->
+<button onclick="openTranslatePage()" title="Translate" class="fixed top-3 z-[9999] right-4 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
+  <span class="material-symbols-outlined">translate</span>
+</button>
+<div id="google_translate_element" style="display:none;"></div>
+<script src="util.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app-config.js"></script>
+<script src="translate.js"></script>
+<!-- Bottom Action Bar / Input -->
+<div class="fixed bottom-0 left-0 w-full z-40 px-4 pb-8 pt-2 bg-gradient-to-t from-background via-background/95 to-transparent">
+<div class="max-w-4xl mx-auto flex items-center gap-3">
+<!-- Text Input Container -->
+<div class="flex-1 bg-surface-container-highest rounded-xl flex items-center px-4 py-2 shadow-inner border border-outline-variant/30">
+<input id="user-input" aria-label="Describe your symptoms" class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline text-[15px] font-medium py-2 outline-none" placeholder="Type more symptoms..." type="text"/>
+<button id="send-btn" aria-label="Send message" class="text-primary p-2 hover:bg-primary/10 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+<!-- Voice Interaction Container -->
+<div id="mic-btn" role="button" tabindex="0" aria-label="Speak your symptoms" class="flex items-center gap-3 bg-primary rounded-xl px-5 py-3 shadow-lg active:scale-95 transition-transform cursor-pointer relative overflow-hidden">
+<div id="mic-waves" class="hidden items-center h-4 gap-[2px] absolute inset-0 justify-center bg-primary z-10 w-full">
+<div class="sound-wave-bar h-2 animate-pulse"></div>
+<div class="sound-wave-bar h-4 animate-pulse"></div>
+<div class="sound-wave-bar h-3 animate-pulse"></div>
+<div class="sound-wave-bar h-5 animate-pulse"></div>
+<div class="sound-wave-bar h-3 animate-pulse"></div>
+</div>
+<button class="text-white flex items-center gap-2 relative z-0">
+<span class="material-symbols-outlined" data-icon="mic" data-weight="fill" style="font-variation-settings: 'FILL' 1;">mic</span>
+<span id="mic-text" class="hidden sm:inline font-bold text-sm tracking-wide">SPEAK</span>
+</button>
+</div>
+</div>
+</div>
+</body>
+<script type="module">
+    import { db, requireAuth } from "./auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const U = window.SAHAYA_UTIL;
+
+    let messages = [];
+    let awaitingReply = false;
+
+    const chatContainer = document.getElementById('chat-container');
+    const typingIndicator = document.getElementById('typing-indicator');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const micBtn = document.getElementById('mic-btn');
+    const micWaves = document.getElementById('mic-waves');
+    const micText = document.getElementById('mic-text');
+
+    // Language configuration
+    const langCode = localStorage.getItem('sahaya_lang') || 'en';
+    const langMap = {
+        en: 'English', hi: 'Hindi', ta: 'Tamil', te: 'Telugu',
+        kn: 'Kannada', ml: 'Malayalam', bn: 'Bengali', mr: 'Marathi',
+        gu: 'Gujarati', pa: 'Punjabi'
+    };
+    const speechCodeMap = {
+        en: 'en-IN', hi: 'hi-IN', ta: 'ta-IN', te: 'te-IN',
+        kn: 'kn-IN', ml: 'ml-IN', bn: 'bn-IN', mr: 'mr-IN',
+        gu: 'gu-IN', pa: 'pa-IN'
+    };
+    const langName = langMap[langCode] || 'English';
+    const speechCode = speechCodeMap[langCode] || 'en-IN';
+
+    // ── Auth + patient context ────────────────────────────────────────────────
+    const user = await requireAuth(); // redirects to login.html when signed out
+    const profileId = sessionStorage.getItem('currentProfileId') || '-';
+
+    // Back link keeps the selected profile.
+    const backLink = document.getElementById('symptoms-back-link');
+    if (backLink && profileId !== '-') {
+        backLink.href = 'dashboard.html?id=' + encodeURIComponent(profileId);
+    }
+
+    // Show the REAL selected patient instead of a hardcoded name.
+    let profileData = null;
+    try {
+        const snap = await getDoc(doc(db, "profiles", profileId));
+        if (snap.exists() && snap.data().userId === user.uid) {
+            profileData = snap.data();
+            const nameEl = document.getElementById('patient-name');
+            const avatarEl = document.getElementById('patient-avatar');
+            if (nameEl) nameEl.textContent = profileData.name || '';
+            if (avatarEl && profileId !== '-') avatarEl.src = U.profilePhoto(profileData);
+        } else {
+            const block = document.getElementById('patient-block');
+            if (block) block.style.display = 'none';
+        }
+    } catch (e) {
+        console.error("Could not load patient profile:", e);
+        const block = document.getElementById('patient-block');
+        if (block) block.style.display = 'none';
+    }
+
+    // ── Chat storage: scoped per user + profile ───────────────────────────────
+    const saveMessages = () =>
+        U.scopedSetItem('sahaya_chat', user.uid, profileId, JSON.stringify(messages));
+
+    // ── Speech Recognition ────────────────────────────────────────────────────
+    // Android WebView does NOT support webkitSpeechRecognition, so inside the
+    // Capacitor app we call the native @capacitor-community/speech-recognition
+    // plugin through the Plugins proxy. On the web/PWA build we fall back to
+    // the Web Speech API.
+    let isListening = false;
+
+    function stopListeningUI() {
+        isListening = false;
+        micWaves.classList.add('hidden');
+        micWaves.classList.remove('flex');
+        micText.textContent = "SPEAK";
+    }
+
+    function startListeningUI() {
+        isListening = true;
+        micWaves.classList.remove('hidden');
+        micWaves.classList.add('flex');
+        micText.textContent = "LISTENING";
+    }
+
+    function handleNativeResult(transcript) {
+        stopListeningUI();
+        if (transcript) {
+            userInput.value = transcript;
+            handleSend();
+        }
+    }
+
+    if (window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()
+            && Capacitor.Plugins && Capacitor.Plugins.SpeechRecognition) {
+        const nativeSR = Capacitor.Plugins.SpeechRecognition;
+
+        micBtn.addEventListener('click', async () => {
+            try {
+                if (isListening) {
+                    await nativeSR.stop();
+                    stopListeningUI();
+                    return;
+                }
+                let avail;
+                try { avail = await nativeSR.available(); } catch (e) { avail = true; }
+                if (avail === false) {
+                    U.toast("Speech recognition isn't available on this device.", 'error');
+                    return;
+                }
+                try {
+                    const perm = await nativeSR.checkPermissions();
+                    if (perm.speechRecognition !== 'granted') {
+                        const req = await nativeSR.requestPermissions();
+                        if (req.speechRecognition !== 'granted') {
+                            U.toast("Please allow microphone access to use voice input.", 'error');
+                            return;
+                        }
+                    }
+                } catch (e) { /* permission API differences — let start() surface errors */ }
+
+                startListeningUI();
+                const result = await nativeSR.start({
+                    language: speechCode,
+                    maxResults: 1,
+                    partialResults: false
+                });
+                handleNativeResult(result && result.matches && result.matches[0]);
+            } catch (err) {
+                console.error('Native speech recognition error:', err);
+                stopListeningUI();
+                U.toast("Voice input didn't work. Please try again or type instead.", 'error');
+            }
+        });
+    } else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const WebSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new WebSpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = speechCode;
+        recognition.interimResults = false;
+
+        recognition.onstart = startListeningUI;
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            handleNativeResult(transcript);
+        };
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error', event.error);
+            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                U.toast("Please allow microphone access to use voice input.", 'error');
+            }
+            stopListeningUI();
+        };
+        recognition.onend = stopListeningUI;
+
+        micBtn.addEventListener('click', () => {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try { recognition.start(); }
+                catch (e) { stopListeningUI(); }
+            }
+        });
+    } else {
+        micBtn.addEventListener('click', () => {
+            U.toast("Voice input isn't supported here — please type your symptoms.", 'info');
+        });
+    }
+
+    // ── Text-to-Speech (guarded — some WebViews lack an engine) ──────────────
+    function speakText(text) {
+        try {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Cancel any ongoing speech
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = speechCode;
+                utterance.rate = 1.0;
+                const voices = window.speechSynthesis.getVoices();
+                const matchingVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(langCode));
+                if (matchingVoice) utterance.voice = matchingVoice;
+                window.speechSynthesis.speak(utterance);
+            }
+        } catch (e) {
+            /* No TTS engine on this device — stay silent rather than crash. */
+        }
+    }
+
+    // ── UI helpers ────────────────────────────────────────────────────────────
+    function addMessageToUI(role, content, isRestoring = false) {
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const msgDiv = document.createElement('div');
+        msgDiv.className = role === 'assistant' ? "flex justify-start w-full gap-3" : "flex justify-end w-full";
+
+        // XSS-safe: untrusted text goes through escapeHtml before template use.
+        const displayContent = U.escapeHtml(String(content).replace(/\*\*/g, ''));
+
+        if (role === 'assistant') {
+            msgDiv.innerHTML = `
+                <div class="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-[#366759] to-[#7CAE9E] flex items-center justify-center self-start border-2 border-white shadow-sm shadow-[#366759]/20">
+                    <span class="material-symbols-outlined text-white" style="font-size: 22px; font-variation-settings: 'FILL' 1;">spa</span>
+                </div>
+                <div class="max-w-[85%] sm:max-w-[70%] bg-[#CFECE0] text-on-primary-container px-6 py-4 rounded-t-xl rounded-br-xl shadow-sm">
+                    <p class="text-[15px] leading-relaxed whitespace-pre-line">${displayContent}</p>
+                    <span class="text-[10px] opacity-60 mt-2 block font-medium uppercase tracking-widest">${time}</span>
+                </div>
+            `;
+            if (!isRestoring) speakText(String(content).replace(/\*\*/g, ''));
+        } else {
+            msgDiv.innerHTML = `
+                <div class="max-w-[85%] sm:max-w-[70%] bg-[#FEC0B3] text-on-secondary-container px-6 py-4 rounded-t-xl rounded-bl-xl shadow-sm">
+                    <p class="text-[15px] leading-relaxed whitespace-pre-line">${displayContent}</p>
+                    <span class="text-[10px] opacity-60 mt-2 block font-medium uppercase tracking-widest text-right">${time}</span>
+                </div>
+            `;
+        }
+        chatContainer.appendChild(msgDiv);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function setAwaiting(v) {
+        awaitingReply = v;
+        sendBtn.disabled = v;
+        sendBtn.style.opacity = v ? '0.5' : '1';
+        userInput.disabled = v;
+    }
+
+    async function fetchAIResponse() {
+        setAwaiting(true);
+        typingIndicator.classList.remove('hidden');
+        typingIndicator.classList.add('flex');
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+        const cfg = window.SAHAYA_BACKEND.chat;
+
+        try {
+            const data = await U.fetchJson(cfg.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + cfg.anonKey
+                },
+                body: JSON.stringify({
+                    messages: messages,
+                    language: langName,
+                    languageCode: langCode,
+                    // Patient context so the AI can personalise safely (ignored by older functions).
+                    patient: profileId !== '-' && profileData ? {
+                        name: profileData.name,
+                        age: profileData.age,
+                        gender: profileData.gender
+                    } : null
+                })
+            }, cfg.timeoutMs);
+
+            messages.push({ role: 'assistant', content: data.content });
+            saveMessages();
+
+            if (data.finished) {
+                const assessmentResult = {
+                    riskLevel: data.riskLevel,
+                    summary: data.summary,
+                    content: data.content,
+                    dos: data.dos || [],
+                    donts: data.donts || []
+                };
+                U.scopedSetItem('sahaya_result', user.uid, profileId, JSON.stringify(assessmentResult));
+                U.scopedRemoveItem('sahaya_chat', user.uid, profileId); // assessment done
+
+                const finalMsgDiv = document.createElement('div');
+                finalMsgDiv.className = "flex flex-col items-start gap-4 mt-2 mb-8";
+                finalMsgDiv.innerHTML = `
+                <div class="flex items-center gap-3 self-start">
+                    <div class="bg-surface-container-low px-4 py-2 rounded-full flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary" style="font-size: 18px;">check_circle</span>
+                        <span class="text-xs font-semibold text-primary/80 italic">Assessment Complete</span>
+                    </div>
+                </div>
+                <div class="w-full flex justify-center py-4">
+                    <a class="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm tracking-widest flex items-center gap-2 shadow-lg hover:bg-primary/90 transition-all active:scale-95 uppercase" href="results.html">
+                        View Assessment Result
+                        <span class="material-symbols-outlined !text-lg" data-icon="arrow_forward">arrow_forward</span>
+                    </a>
+                </div>
+                `;
+                chatContainer.appendChild(finalMsgDiv);
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                speakText("My assessment is complete. Redirecting you to the results.");
+
+                setTimeout(() => {
+                    window.location.href = 'results.html';
+                }, 4000);
+            } else {
+                addMessageToUI('assistant', data.content);
+            }
+        } catch (error) {
+            console.error("AI request failed:", error);
+            addMessageToUI('assistant', error.message ||
+                "Something went wrong. Please check your connection and try again.");
+        } finally {
+            typingIndicator.classList.add('hidden');
+            typingIndicator.classList.remove('flex');
+            setAwaiting(false);
+        }
+    }
+
+    function handleSend() {
+        if (awaitingReply) return; // one request at a time
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        userInput.value = '';
+
+        addMessageToUI('user', text);
+        messages.push({ role: 'user', content: text });
+        saveMessages();
+
+        try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch (e) { /* noop */ }
+
+        fetchAIResponse();
+    }
+
+    // ── Init conversation ─────────────────────────────────────────────────────
+    (function initChat() {
+        const savedChat = U.scopedGetItem('sahaya_chat', user.uid, profileId);
+
+        let shouldFetchInitial = true;
+
+        if (savedChat) {
+            try {
+                const parsed = JSON.parse(savedChat);
+                if (parsed && parsed.length > 0) {
+                    messages = parsed.filter(m => m && (m.role === 'user' || m.role === 'assistant'));
+                    messages.forEach(msg => addMessageToUI(msg.role, msg.content, true));
+                    shouldFetchInitial = false;
+                    setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }), 100);
+                }
+            } catch (e) {
+                console.error("Error parsing chat history", e);
+                U.scopedRemoveItem('sahaya_chat', user.uid, profileId);
+            }
+        }
+
+        if (shouldFetchInitial) {
+            fetchAIResponse();
+        }
+    })();
+
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            handleSend();
+        }
+    });
+
+    // Preload TTS voices where supported (no-op otherwise).
+    try {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+        }
+    } catch (e) { /* noop */ }
+</script>
+</body>
+</html>

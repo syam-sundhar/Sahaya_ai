@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sahaya - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#9ed1c0",
+              "primary-fixed-dim": "#9ed1c0",
+              "on-tertiary-container": "#014142",
+              "secondary-fixed-dim": "#f5b8ab",
+              "inverse-on-surface": "#fbeeec",
+              "secondary-container": "#fec0b3",
+              "on-tertiary": "#ffffff",
+              "outline": "#707975",
+              "on-tertiary-fixed": "#002020",
+              "surface-container-high": "#f2e5e3",
+              "tertiary-fixed": "#b7ecec",
+              "primary": "#366759",
+              "on-surface": "#201a19",
+              "on-secondary": "#ffffff",
+              "on-secondary-fixed-variant": "#663b32",
+              "on-primary": "#ffffff",
+              "on-error-container": "#93000a",
+              "surface-bright": "#fff8f7",
+              "on-background": "#201a19",
+              "surface": "#fff8f7",
+              "on-secondary-container": "#7a4c42",
+              "surface-container": "#f8ebe9",
+              "secondary-fixed": "#ffdad3",
+              "outline-variant": "#c0c8c4",
+              "on-surface-variant": "#404945",
+              "on-error": "#ffffff",
+              "surface-container-low": "#fef1ef",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#1d4f42",
+              "on-primary-container": "#0c4236",
+              "inverse-surface": "#362f2e",
+              "on-tertiary-fixed-variant": "#164e4f",
+              "surface-variant": "#ece0de",
+              "surface-dim": "#e4d7d5",
+              "background": "#fff8f7",
+              "tertiary-fixed-dim": "#9bd0d0",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed": "#32110b",
+              "tertiary": "#326667",
+              "primary-fixed": "#b9eddc",
+              "surface-container-highest": "#ece0de",
+              "error-container": "#ffdad6",
+              "surface-tint": "#366759",
+              "secondary": "#815248",
+              "tertiary-container": "#79adad",
+              "primary-container": "#7cae9e",
+              "on-primary-fixed": "#002019"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #F8EBE9 0%, #CFECE0 100%);
+      }
+      .font-headline {
+        font-family: 'Manrope', sans-serif;
+      }
+      .btn-primary-gradient {
+        background: linear-gradient(135deg, #366759 0%, #7CAE9E 100%);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+<body class="min-h-screen flex items-center justify-center p-6 text-on-surface">
+<div class="w-full max-w-md space-y-12">
+<!-- Brand Identity Section -->
+<header class="flex flex-col items-center space-y-4">
+<div class="w-20 h-20 rounded-2xl btn-primary-gradient flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<h1 class="font-headline font-extrabold text-4xl tracking-tighter text-primary">SAHAYA</h1>
+</header><div class="flex flex-col items-center pt-2 pb-6">
+<button class="w-full flex items-center justify-between bg-[#7CAE9E] text-white p-6 rounded-2xl shadow-xl hover:opacity-90 active:scale-[0.98] transition-all group" onclick="window.location.href='scan-medicine.html'">
+<div class="flex items-center gap-4">
+<div class="bg-white/20 p-3 rounded-xl">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">document_scanner</span>
+</div>
+<div class="text-left">
+<h3 class="font-headline font-extrabold text-xl leading-tight">Scan Medicine</h3>
+<p class="text-white/80 text-sm font-medium">Check details instantly — no login needed</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-3xl group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
+</button>
+</div>
+<!-- Login Container -->
+<main class="space-y-10">
+<div class="text-center space-y-2">
+<h2 class="font-headline font-bold text-2xl text-on-surface">Login to Sahaya</h2>
+<p class="text-on-surface-variant font-medium opacity-80">Access your health and wellness sanctuary</p>
+</div>
+<!-- Google Login -->
+<button id="google-login-btn" aria-label="Continue with Google" class="w-full bg-white text-on-surface flex items-center justify-center gap-3 font-headline font-bold py-4 px-6 rounded-2xl shadow-sm border border-outline-variant hover:bg-surface-container-lowest active:scale-95 transition-all text-[16px] tracking-wide disabled:opacity-60 disabled:pointer-events-none">
+    <span id="google-login-spinner" class="material-symbols-outlined animate-spin hidden text-on-surface-variant">sync</span>
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" aria-hidden="true" class="w-6 h-6"/>
+    <span id="google-login-label">Continue with Google</span>
+</button>
+<p id="login-hint" class="hidden text-center text-sm text-on-surface-variant font-medium px-4"></p>
+<!-- Rural-Friendly Support Link -->
+<div class="text-center pt-4">
+<a class="text-primary font-bold text-sm hover:underline flex items-center justify-center gap-2" href="#" onclick="return false;" title="Help coming soon">
+<span class="material-symbols-outlined text-base">help_outline</span>
+                    Need help logging in?
+                </a>
+</div>
+</main>
+<!-- Visual Anchor / Decorative Illustration -->
+<footer class="pt-8 opacity-60">
+<div class="relative h-32 w-full rounded-2xl overflow-hidden shadow-inner">
+<img alt="" aria-hidden="true" class="w-full h-full object-cover" src="logo.png"/>
+<div class="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent"></div>
+</div>
+<p class="text-center text-[10px] uppercase tracking-[0.2em] mt-6 text-on-surface-variant font-bold">Your personal health companion</p>
+</footer>
+</div>
+<!-- Translate Button -->
+<button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page" class="fixed top-3 z-[9999] right-4 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
+  <span class="material-symbols-outlined">translate</span>
+</button>
+<div id="google_translate_element" style="display:none;"></div>
+<script src="util.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app-config.js"></script>
+<script src="translate.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { getAuth, signInWithRedirect, getRedirectResult, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+  const U = window.SAHAYA_UTIL;
+
+  const app = initializeApp(window.SAHAYA_FIREBASE_CONFIG);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  const loginBtn = document.getElementById('google-login-btn');
+  const spinner = document.getElementById('google-login-spinner');
+  const label = document.getElementById('google-login-label');
+  const hint = document.getElementById('login-hint');
+
+  function setBusy(busy) {
+    loginBtn.disabled = busy;
+    spinner.classList.toggle('hidden', !busy);
+    label.textContent = busy ? 'Connecting…' : 'Continue with Google';
+  }
+
+  function friendlyAuthError(error) {
+    switch (error && error.code) {
+      case 'auth/unauthorized-domain':
+        return 'This device\'s app origin is not allowed for sign-in yet. ' +
+               'Add "localhost" under Authentication → Settings → Authorized domains ' +
+               'in the Firebase console (one-time setup).';
+      case 'auth/operation-not-allowed':
+        return 'Google sign-in is not enabled in the Firebase console. ' +
+               'Enable it under Authentication → Sign-in method → Google.';
+      case 'auth/network-request-failed':
+        return 'Network problem while contacting Google. Please check your connection and try again.';
+      default:
+        return 'Google Login Failed: ' + ((error && error.message) || 'Unknown error');
+    }
+  }
+
+  // Already signed in? Go straight to profiles.
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const dest = sessionStorage.getItem('sahaya_post_login');
+      sessionStorage.removeItem('sahaya_post_login');
+      window.location.href = dest || 'index.html';
+    }
+  });
+
+  // Completing a redirect round-trip?
+  getRedirectResult(auth).then((result) => {
+    if (result && result.user) {
+      window.location.href = 'index.html';
+    }
+  }).catch((error) => {
+    console.error("Error with redirect sign in:", error);
+    setBusy(false);
+    U.toast(friendlyAuthError(error), 'error');
+  });
+
+  loginBtn.addEventListener('click', () => {
+    setBusy(true);
+    signInWithRedirect(auth, provider).catch((error) => {
+      console.error("Error during Google Login:", error);
+      setBusy(false);
+      U.toast(friendlyAuthError(error), 'error', 0);
+    });
+  });
+</script></body></html>

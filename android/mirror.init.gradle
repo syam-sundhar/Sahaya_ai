@@ -1,0 +1,21 @@
+// Prepends the Aliyun public/Google mirrors to every project's repositories
+// (including each Capacitor plugin module's own buildscript block).
+//
+// Why: repo.maven.apache.org / repo1.maven.org rate-limit this network with
+// HTTP 429, which breaks fresh dependency downloads of the
+// @capacitor-community/speech-recognition module. The mirrors serve identical
+// artifacts; the original repositories remain in place afterwards as fallbacks.
+//
+// Usage: gradlew.bat -I mirror.init.gradle assembleDebug
+allprojects {
+    buildscript {
+        repositories {
+            maven { url 'https://maven.aliyun.com/repository/public' }
+            maven { url 'https://maven.aliyun.com/repository/google' }
+        }
+    }
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+    }
+}

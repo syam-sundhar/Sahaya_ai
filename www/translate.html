@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SAHAYA - Choose Language</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#366759", "primary-container": "#7cae9e",
+            "on-primary": "#ffffff", "background": "#fff8f7",
+            "surface-container": "#f8ebe9", "surface-container-lowest": "#ffffff",
+            "on-surface": "#201a19", "on-surface-variant": "#404945",
+          },
+          fontFamily: { "headline": ["Manrope"], "body": ["Inter"] },
+          borderRadius: { "DEFAULT": "0.5rem", "2xl": "1.5rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    body { min-height: 100dvh; background: linear-gradient(135deg, #F8EBE9 0%, #CFECE0 100%); }
+    .lang-card { transition: all 0.2s ease; }
+    .lang-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(54,103,89,0.15); }
+    .lang-card.active { border-color: #366759 !important; background: #b9eddc !important; }
+  </style>
+<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+<body class="font-body text-on-surface min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-[#F8EBE9]/90 backdrop-blur-md flex justify-between items-center px-6 py-4 w-full sticky top-0 z-50">
+    <div class="flex items-center gap-4">
+      <button onclick="goBack()" class="text-[#366759] hover:bg-[#CFECE0]/50 transition-colors p-2 rounded-full active:scale-95">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <h1 class="font-headline font-black text-[#366759] tracking-widest text-2xl uppercase">SAHAYA</h1>
+    </div>
+    <div class="bg-[#366759] w-10 h-10 rounded-full flex items-center justify-center shadow-sm">
+      <span class="material-symbols-outlined text-white" style="font-variation-settings:'FILL' 1;">translate</span>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-6 py-10 max-w-xl">
+    <!-- Hero -->
+    <div class="text-center mb-10">
+      <div class="w-16 h-16 bg-[#366759] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings:'FILL' 1;">translate</span>
+      </div>
+      <h2 class="font-headline text-3xl font-extrabold text-[#366759] mb-2">Choose Language</h2>
+      <p class="text-on-surface-variant text-sm">भाषा चुनें · மொழி தேர்வு · భాష ఎంచుకోండి</p>
+    </div>
+
+    <!-- Language Grid -->
+    <div class="grid grid-cols-2 gap-4" id="lang-grid"></div>
+  </main>
+
+  <div id="google_translate_element" style="display:none;"></div>
+  <script src="translate.js"></script>
+  
+  <script>
+    const LANGUAGES = [
+      { code: 'en', name: 'English',    native: 'English',    flag: '🌐' },
+      { code: 'hi', name: 'Hindi',      native: 'हिंदी',      flag: '🇮🇳' },
+      { code: 'ta', name: 'Tamil',      native: 'தமிழ்',     flag: '🇮🇳' },
+      { code: 'te', name: 'Telugu',     native: 'తెలుగు',    flag: '🇮🇳' },
+      { code: 'kn', name: 'Kannada',    native: 'ಕನ್ನಡ',    flag: '🇮🇳' },
+      { code: 'ml', name: 'Malayalam',  native: 'മലയാളം',   flag: '🇮🇳' },
+      { code: 'bn', name: 'Bengali',    native: 'বাংলা',     flag: '🇮🇳' },
+      { code: 'mr', name: 'Marathi',    native: 'मराठी',     flag: '🇮🇳' },
+      { code: 'gu', name: 'Gujarati',   native: 'ગુજરાતી',  flag: '🇮🇳' },
+      { code: 'pa', name: 'Punjabi',    native: 'ਪੰਜਾਬੀ',  flag: '🇮🇳' },
+    ];
+
+    const currentLang = localStorage.getItem('sahaya_lang') || 'en';
+    const grid = document.getElementById('lang-grid');
+
+    LANGUAGES.forEach(function(lang) {
+      const isActive = lang.code === currentLang;
+      const btn = document.createElement('button');
+      btn.className = 'lang-card w-full p-5 rounded-2xl border-2 text-left shadow-sm active:scale-95 ' +
+        (isActive ? 'active border-[#366759] bg-[#b9eddc]' : 'border-transparent bg-white/80');
+      btn.innerHTML =
+        '<div class="text-2xl mb-2">' + lang.flag + '</div>' +
+        '<div class="font-headline font-bold text-xl text-[#366759]">' + lang.native + '</div>' +
+        '<div class="text-sm text-on-surface-variant font-medium">' + lang.name + '</div>' +
+        (isActive ? '<div class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[#366759] bg-[#366759]/10 px-2 py-1 rounded-full"><span class="material-symbols-outlined" style="font-size:14px;">check</span> Active</div>' : '');
+      btn.onclick = function() { selectLang(lang.code); };
+      grid.appendChild(btn);
+    });
+
+    function selectLang(code) {
+      localStorage.setItem('sahaya_lang', code);
+
+      if (code === 'en') {
+        // Reset to English — clear the cookie
+        document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+        goBack();
+        return;
+      }
+
+      // Set googtrans cookie directly (most reliable — widget reads this on next page load)
+      document.cookie = 'googtrans=/en/' + code + '; path=/; SameSite=Lax';
+      document.cookie = 'googtrans=/en/' + code + '; SameSite=Lax';
+
+      // Also fire the hidden widget's combo so Google sets its own session cookie
+      var sel = document.querySelector('.goog-te-combo');
+      if (sel) {
+        sel.value = code;
+        sel.dispatchEvent(new Event('change'));
+        setTimeout(goBack, 800); // give Google ~800ms to process
+      } else {
+        goBack();
+      }
+    }
+
+    function goBack() {
+      var ret = localStorage.getItem('sahaya_translate_return') || 'index.html';
+      window.location.href = ret;
+    }
+  </script>
+</body>
+</html>
