@@ -127,3 +127,41 @@ In a health app this is also a data-integrity risk (a crafted "result" could dis
 2. #7 + #9 (backend auth + health-data privacy) before any public release.
 3. #8 (XSS) and #6 (logout) — quick wins with outsized impact.
 4. Work through Medium items, then hygiene before Play Store submission.
+
+---
+
+## Fix status — 2026-08-26
+
+All code-level issues are fixed and the project now builds: `gradlew -I mirror.init.gradle assembleDebug` → **BUILD SUCCESSFUL** (`android/app/build/outputs/apk/debug/app-debug.apk`, committed at `65bdd1d`).
+
+| # | Issue | Status |
+|---|---|---|
+| 1 | Google Sign-In fails in APK | ✅ Rewritten login (`login.html`) with actionable errors. **⚠️ Needs one manual step:** add `localhost` under *Firebase Console → Authentication → Settings → Authorized domains* (and keep the Google provider enabled) — see notes below |
+| 2 | Camera broken (no CAMERA permission) | ✅ `<uses-permission android:name="android.permission.CAMERA" />` added to `AndroidManifest.xml`; runtime request forwarded by the Capacitor bridge; gallery path still works if denied |
+| 3 | Voice input dead in APK | ✅ `@capacitor-community/speech-recognition@7.0.1` installed & registered; native path via `Capacitor.Plugins.SpeechRecognition` with permission checks, Web Speech API fallback on web; `RECORD_AUDIO` permission + `<queries>` for the recognition service added |
+| 4 | Build breaks on missing colors | ✅ `res/values/colors.xml` restored (`colorPrimary`/`colorPrimaryDark`/`colorAccent`); verified by a full successful build |
+| 5 | Phone/OTP login decorative | ✅ OTP UI removed entirely — single honest Google sign-in screen |
+| 6 | No logout anywhere | ✅ Logout button on `index.html` header → `auth.js logout()` = Firebase sign-out + purge of all scoped local data + redirect to login; back buttons now do real navigation (`util.js navBack`) |
+| 7 | Unprotected AI backends / embedded keys | 🟡 Partially fixed in code: endpoints + anon keys centralized in `app-config.js`, all calls go through `fetchJson` with timeouts and `response.ok` checks, patient context (name/age/gender) sent with chat. **⚠️ Server-side work only you can do:** both Supabase Edge Functions must verify the Firebase ID token and rate-limit per user — otherwise anyone can still drain the LLM budget |
+| 8 | XSS via innerHTML | ✅ All user/AI/profile text escaped (`util.js escapeHtml`) or set via `textContent`; markdown rendered as escaped text + `<br/>` only |
+| 9 | Health data shared across profiles / backups | ✅ All chat/result/photo storage scoped per `<base>:<uid>:<profileId>`; legacy keys purged on logout; `allowBackup="false"` in manifest. Firestore security rules still worth reviewing in console (not in this repo) |
+| 10 | Firebase config duplicated everywhere | ✅ Single `firebase-config.js` imported by all pages; `config.txt` / `apps.txt` deleted |
+| 11 | Placeholder/demo leftovers | ✅ "Arjun Das" removed (real profile loaded from Firestore); all dead `lh3.googleusercontent.com` stock URLs replaced with generated SVG-initials avatars; new profiles no longer persist a placeholder photo |
+| 12 | Harmful service worker | ✅ `service-worker.js` deleted; all registrations removed |
+| 13 | Fragile translation layer | ⚠️ Improved: `element.js` loads only when language ≠ English, banner watchdog is cookie-guarded and slower. Full i18n string tables remain a future improvement (dynamic content is still not translated by the widget) |
+| 14 | No input validation | ✅ Age 0–120, weight 1–500 kg, sugar 1–2000 mg/dL, hemoglobin 1–30 g/dL validated client-side before writes; blood inputs are `type="number"`; empty blood saves rejected; photos compressed to JPEG q70 before upload |
+| 15 | Weight card logic bugs | ✅ Chart max scale computed up-front; latest month *with* data selected and labeled stale (e.g. "(Jul)"); N/A ghost bars gone |
+| 16 | Broken navigation & guards | ✅ Every protected page runs `requireAuth()`; results/blood-history links carry `?id=`; scan-medicine back button returns to real previous screen (public page by design); avatar persists via scoped storage instead of sessionStorage |
+| 17 | Network calls without ok/timeouts | ✅ `util.js fetchJson` (AbortController timeout + `response.ok` + JSON guard) used by chat and medicine scanner; errors shown as inline toasts, never raw `alert()` |
+| 18 | Tailwind via CDN | 🔵 Not changed (would need a build step / precompiled CSS) — works as-is, just heavier at first paint |
+| 19 | Filenames with spaces | ✅ Renamed to kebab-case (`add-new-person.html`, `check-symptoms.html`, `scan-medicine.html/js`); all references updated |
+| 20 | Orphan/dead files | ✅ `transulate.html`, `apps.txt`, `service-worker.js` deleted; APK assets verified clean |
+| 21 | Unpinned CDN deps | ✅ Chart.js pinned to 4.4.9; avatar fallback is an offline-capable local data-URI (no `ui-avatars.com` dependency) |
+| 22 | Build/project hygiene | ✅ git repo initialized with `.gitignore` (build/, .gradle/, node_modules/, local.properties/) and initial commit; npm scripts added (`npm run sync` / `apk`); deps installed; `package.json` main fixed. **Note:** builds need JDK 21 — run `set JAVA_HOME=C:\Users\syams\.jdks\jbr-21.0.11` first; `-I mirror.init.gradle` routes around Maven Central rate-limiting (HTTP 429). Moving out of OneDrive is still recommended but optional |
+| 23 | Play Store health-app compliance | 🔵 Not started — needs privacy policy URL, data-safety declaration, account/data-deletion path before submission |
+| 24 | Accessibility | 🟡 Improved: aria-labels added to icon-only buttons (translate, send, mic, capture/gallery/flash), keyboard focus on mic, inline error text with `role=alert`. Contrast tuning remains |
+
+### The two actions that still require you (outside this code)
+
+1. **Firebase Console** → Authentication → Settings → **Authorized domains** → add `localhost`. Without this, Google sign-in inside the installed APK shows a clear error message telling you exactly this. Also confirm the **Google** provider is enabled under Sign-in method. (The native-plugin alternative needs a `google-services.json` + OAuth web client ID from the same console.)
+2. **Supabase Edge Functions** (`sahaya-chat` in project `zglcrgarasocrhkchcvl`, `analyze-medicine` in project `akubhszvwhfafwyhrvzt`): verify the Firebase ID token sent by the app and rate-limit per user. Until then the anon keys can be replayed by anyone to spend your AI budget. Consolidating both features onto one Supabase project is also worth doing.
