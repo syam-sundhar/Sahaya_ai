@@ -154,7 +154,7 @@
 <script src="translate.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-  import { getAuth, signInWithRedirect, getRedirectResult, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+  import { getAuth, signInWithCredential, signInWithRedirect, getRedirectResult, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
   const U = window.SAHAYA_UTIL;
 
@@ -189,6 +189,38 @@
     }
   }
 
+  // Capacitor injects window.Capacitor into the Android WebView.  Registering the
+  // plugin here lets this static HTML app call the native plugin without a bundler.
+  function nativeFirebaseAuth() {
+    const capacitor = window.Capacitor;
+    if (!capacitor || !capacitor.isNativePlatform || !capacitor.isNativePlatform()) {
+      return null;
+    }
+    return capacitor.Plugins.FirebaseAuthentication ||
+      capacitor.registerPlugin('FirebaseAuthentication');
+  }
+
+  async function signInOnAndroid() {
+    const nativeAuth = nativeFirebaseAuth();
+    if (!nativeAuth) return false;
+
+    // Native Google Sign-In returns an ID token.  Sign it into the existing Web
+    // Firebase SDK so the rest of this static app and Firestore keep using one
+    // shared auth session.
+    // The legacy picker is more broadly available than Credential Manager and
+    // reliably shows every Google account on older Android / Play Services.
+    const result = await nativeAuth.signInWithGoogle({
+      skipNativeAuth: true,
+      useCredentialManager: false
+    });
+    const idToken = result && result.credential && result.credential.idToken;
+    if (!idToken) {
+      throw new Error('Google did not return an ID token. Check the Android Firebase configuration.');
+    }
+    await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
+    return true;
+  }
+
   // Already signed in? Go straight to profiles.
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -198,23 +230,31 @@
     }
   });
 
-  // Completing a redirect round-trip?
-  getRedirectResult(auth).then((result) => {
-    if (result && result.user) {
-      window.location.href = 'index.html';
-    }
-  }).catch((error) => {
-    console.error("Error with redirect sign in:", error);
-    setBusy(false);
-    U.toast(friendlyAuthError(error), 'error');
-  });
+  // The redirect flow is only for the hosted web/PWA version. On Android the
+  // native Google activity completes inside the app, so Chrome never sees a
+  // localhost callback.
+  if (!nativeFirebaseAuth()) {
+    getRedirectResult(auth).then((result) => {
+      if (result && result.user) {
+        window.location.href = 'index.html';
+      }
+    }).catch((error) => {
+      console.error("Error with redirect sign in:", error);
+      setBusy(false);
+      U.toast(friendlyAuthError(error), 'error');
+    });
+  }
 
-  loginBtn.addEventListener('click', () => {
+  loginBtn.addEventListener('click', async () => {
     setBusy(true);
-    signInWithRedirect(auth, provider).catch((error) => {
+    try {
+      if (!(await signInOnAndroid())) {
+        await signInWithRedirect(auth, provider);
+      }
+    } catch (error) {
       console.error("Error during Google Login:", error);
       setBusy(false);
       U.toast(friendlyAuthError(error), 'error', 0);
-    });
+    }
   });
 </script></body></html>
