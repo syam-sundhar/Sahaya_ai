@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SAHAYA - Choose Language</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#366759", "primary-container": "#7cae9e",
+          "on-primary": "#ffffff", "background": "#fff8f7",
+          "surface-container": "#f8ebe9", "surface-container-lowest": "#ffffff",
+          "on-surface": "#201a19", "on-surface-variant": "#404945",
+          "on-primary-container": "#0c4236",
+        },
+        fontFamily: { "headline": ["Manrope"], "body": ["Inter"] },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  body { min-height: 100dvh; }
+  .lang-card { transition: all 0.25s ease; }
+  .lang-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(54,103,89,0.18); }
+  .lang-card:active { transform: scale(0.97); }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  .float-anim { animation: float 3s ease-in-out infinite; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in-up { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
+
+  .bg-gradient-sahaya {
+    background: linear-gradient(160deg, #366759 0%, #7CAE9E 40%, #BFF5F5 70%, #CFECE0 100%);
+  }
+</style>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="manifest" href="manifest.json">
+</head>
+<body class="font-body text-white min-h-screen flex flex-col bg-gradient-sahaya">
+
+  <!-- Top bar -->
+  <header class="flex justify-center items-center px-6 py-6 w-full">
+    <div class="flex items-center gap-3">
+      <img src="logo.png" alt="Sahaya" class="w-12 h-12 rounded-2xl shadow-lg float-anim"/>
+      <h1 class="font-headline font-black tracking-widest text-3xl text-white drop-shadow-lg">SAHAYA</h1>
+    </div>
+  </header>
+
+  <main class="flex-grow flex flex-col items-center justify-center px-6 pb-10 max-w-xl mx-auto w-full">
+
+    <!-- Hero section -->
+    <div class="text-center mb-8 fade-in-up" style="animation-delay: 0.1s">
+      <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-xl border border-white/30">
+        <span class="material-symbols-outlined text-white text-5xl" style="font-variation-settings:'FILL' 1;">translate</span>
+      </div>
+      <h2 id="gate-title" class="font-headline text-4xl font-extrabold text-white mb-3 drop-shadow-md">Choose Your Language</h2>
+      <p id="gate-subtitle" class="text-white/80 text-sm leading-relaxed">
+        भाषा चुनें · மொழி தேர்வு · భాష ఎంచుకోండి · ಭಾಷೆ ಆಯ್ಕೆ · ভাষা নির্বাচন
+      </p>
+    </div>
+
+    <!-- Language Grid -->
+    <div class="grid grid-cols-2 gap-3 w-full fade-in-up" style="animation-delay: 0.3s" id="lang-grid"></div>
+
+    <!-- Subtle footer text -->
+    <p class="mt-8 text-white/50 text-xs text-center fade-in-up" style="animation-delay: 0.5s">
+      You can change the language anytime from inside the app.
+    </p>
+
+  </main>
+
+  <script src="i18n.js"></script>
+  <script src="voice.js"></script>
+
+  <script>
+    var I18N = window.SAHAYA_I18N;
+    var Voice = window.SAHAYA_VOICE;
+
+    var LANGUAGES = [
+      { code: 'en', name: 'English',    native: 'English',    flag: '🌐' },
+      { code: 'hi', name: 'Hindi',      native: 'हिंदी',      flag: '🇮🇳' },
+      { code: 'ta', name: 'Tamil',      native: 'தமிழ்',     flag: '🇮🇳' },
+      { code: 'te', name: 'Telugu',     native: 'తెలుగు',    flag: '🇮🇳' },
+      { code: 'kn', name: 'Kannada',    native: 'ಕನ್ನಡ',    flag: '🇮🇳' },
+      { code: 'ml', name: 'Malayalam',  native: 'മലയാളം',   flag: '🇮🇳' },
+      { code: 'bn', name: 'Bengali',    native: 'বাংলা',     flag: '🇮🇳' },
+      { code: 'mr', name: 'Marathi',    native: 'मराठी',     flag: '🇮🇳' },
+      { code: 'gu', name: 'Gujarati',   native: 'ગુજરાતી',  flag: '🇮🇳' },
+      { code: 'pa', name: 'Punjabi',    native: 'ਪੰਜਾਬੀ',  flag: '🇮🇳' },
+    ];
+
+    var grid = document.getElementById('lang-grid');
+
+    LANGUAGES.forEach(function(lang, idx) {
+      var btn = document.createElement('button');
+      btn.className = 'lang-card w-full p-5 rounded-2xl border-2 border-white/20 text-left ' +
+        'bg-white/15 backdrop-blur-md hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 ' +
+        'fade-in-up';
+      btn.style.animationDelay = (0.3 + idx * 0.05) + 's';
+      btn.innerHTML =
+        '<div class="text-2xl mb-2">' + lang.flag + '</div>' +
+        '<div class="font-headline font-bold text-xl text-white">' + lang.native + '</div>' +
+        '<div class="text-sm text-white/70 font-medium">' + lang.name + '</div>';
+      btn.onclick = function() { selectLang(lang.code); };
+      grid.appendChild(btn);
+    });
+
+    function selectLang(code) {
+      if (I18N) I18N.setLang(code);
+      // Mark that user has chosen (even English).
+      localStorage.setItem('sahaya_lang', code);
+      window.location.href = 'login.html';
+    }
+
+    // Play voice greeting after a short delay.
+    setTimeout(function() {
+      if (Voice) Voice.speak("Welcome to Sahaya! Please choose your language.", 'en');
+    }, 800);
+  </script>
+</body>
+</html>

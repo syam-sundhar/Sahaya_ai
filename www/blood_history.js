@@ -2,6 +2,9 @@ import { db, requireAuth } from "./auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 const U = window.SAHAYA_UTIL;
+const I18N = window.SAHAYA_I18N;
+const Voice = window.SAHAYA_VOICE;
+const t = I18N ? I18N.t.bind(I18N) : (k) => k;
 
 // Deep-linkable: honour ?id= first, then fall back to the session hint.
 let profileId = new URLSearchParams(window.location.search).get('id')
@@ -21,15 +24,16 @@ let profileId = new URLSearchParams(window.location.search).get('id')
 
         if (docSnap.exists() && docSnap.data().userId === user.uid) {
             document.getElementById('loading-state').classList.add('hidden');
+            if (Voice) Voice.greet('blood_history_title');
             renderHistory(docSnap.data());
         } else {
-            U.toast("Profile not found or you don't have access to it.", 'error');
+            U.toast(t('error_generic'), 'error');
             setTimeout(() => { window.location.href = 'index.html'; }, 1200);
         }
     } catch (error) {
         console.error("Error fetching profile:", error);
         const el = document.getElementById('loading-state');
-        el.innerText = "Failed to load history. Please check your connection.";
+        el.innerText = t('error_generic');
     }
 })();
 

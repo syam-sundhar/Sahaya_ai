@@ -131,7 +131,7 @@
 </div>
 <!-- Viewfinder Instructions -->
 <div class="absolute bottom-6 left-0 right-0 text-center px-4 pointer-events-none">
-<p id="scan-text" class="text-white font-medium drop-shadow-md text-sm bg-black/30 backdrop-blur-md inline-block px-4 py-2 rounded-full">
+<p id="scan-text" class="text-white font-medium drop-shadow-md text-sm bg-black/30 backdrop-blur-md inline-block px-4 py-2 rounded-full" data-i18n="scan_instruction">
                     Center the medicine label within the frame
                 </p>
 </div>
@@ -155,7 +155,7 @@
 <div id="result-card" class="hidden w-full bg-surface-container-lowest rounded-2xl p-6 shadow-[0_8px_32px_rgba(54,103,89,0.08)] border border-primary-container/20">
 <div class="flex items-start justify-between mb-4">
 <div>
-<span class="text-[10px] font-bold uppercase tracking-widest text-primary-container mb-1 block">Diagnosis Result</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary-container mb-1 block" data-i18n="scan_result_label">Diagnosis Result</span>
 <h2 id="res-name" class="text-2xl font-headline font-bold text-primary"></h2>
 </div>
 <div class="w-12 h-12 bg-secondary-container rounded-xl flex items-center justify-center text-on-secondary-container pointer-events-none">
@@ -166,11 +166,11 @@
 <!-- Info Grid -->
 <div class="grid grid-cols-1 gap-4">
 <div class="p-4 bg-primary-container/10 rounded-lg">
-<h4 class="text-xs font-bold text-primary uppercase mb-1">Purpose</h4>
+<h4 class="text-xs font-bold text-primary uppercase mb-1" data-i18n="scan_purpose">Purpose</h4>
 <p id="res-purpose" class="text-sm text-on-surface"></p>
 </div>
 <div class="p-4 bg-primary-container/10 rounded-lg">
-<h4 class="text-xs font-bold text-primary uppercase mb-1">Usage</h4>
+<h4 class="text-xs font-bold text-primary uppercase mb-1" data-i18n="scan_usage">Usage</h4>
 <p id="res-usage" class="text-sm text-on-surface"></p>
 </div>
 </div>
@@ -181,10 +181,10 @@
 </div>
 <!-- Actions -->
 <div class="flex gap-3 pt-2">
-<button class="flex-1 py-4 px-6 bg-gradient-to-r from-primary to-primary-container text-white rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-transform" onclick="resetScanner()">
+<button class="flex-1 py-4 px-6 bg-gradient-to-r from-primary to-primary-container text-white rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-transform" onclick="resetScanner()" data-i18n="scan_another">
                         Scan Another
                     </button>
-<button class="flex-1 py-4 px-6 bg-secondary-container text-on-secondary-container rounded-2xl font-bold text-sm active:scale-95 transition-transform" onclick="window.location.href='dashboard.html'">
+<button class="flex-1 py-4 px-6 bg-secondary-container text-on-secondary-container rounded-2xl font-bold text-sm active:scale-95 transition-transform" onclick="window.location.href='dashboard.html'" data-i18n="scan_back">
                         Back to Dashboard
                     </button>
 </div>
@@ -196,12 +196,12 @@
 <button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page" class="fixed top-3 z-[9999] right-16 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
   <span class="material-symbols-outlined">translate</span>
 </button>
-<div id="google_translate_element" style="display:none;"></div>
 <canvas id="scan-canvas" class="hidden"></canvas>
 <input type="file" id="file-input" class="hidden" accept="image/*" capture="environment">
 <script src="util.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app-config.js"></script>
-<script src="translate.js"></script>
-<script src="scan-medicine.js"></script>
+<script src="i18n.js"></script>
+<script src="voice.js"></script>
+<script src="scan-medicine.js" type="module"></script>
 </body></html>

@@ -109,8 +109,8 @@
 <!-- Create Profile Section -->
 <section class="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_4px_40px_rgba(32,26,25,0.04)] border border-surface-container">
 <div class="text-center mb-10">
-<h2 class="font-headline text-3xl font-extrabold text-primary mb-2">Create New Profile</h2>
-<p class="text-on-surface-variant">Tell us a bit about who's joining</p>
+<h2 class="font-headline text-3xl font-extrabold text-primary mb-2" data-i18n="add_profile_title">Create New Profile</h2>
+<p class="text-on-surface-variant" data-i18n="add_profile_subtitle">Tell us a bit about who's joining</p>
 </div>
 <form class="space-y-8" id="add-profile-form">
 <!-- Avatar Preview -->
@@ -125,154 +125,43 @@
 </div>
 <div class="space-y-6">
 <div>
-<label class="block text-sm font-semibold text-primary mb-2 ml-1">Full Name</label>
-<input id="profile-name" class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:opacity-40 transition-all outline-none" placeholder="Enter name" required="" type="text"/>
+<label class="block text-sm font-semibold text-primary mb-2 ml-1" data-i18n="add_profile_name">Full Name</label>
+<input id="profile-name" class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:opacity-40 transition-all outline-none" data-i18n-placeholder="add_profile_name_ph" placeholder="Enter name" required="" type="text"/>
 </div>
 <div class="grid grid-cols-2 gap-6">
 <div>
-<label class="block text-sm font-semibold text-primary mb-2 ml-1" for="profile-age">Age</label>
-<input id="profile-age" class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:opacity-40 transition-all outline-none" placeholder="Years" required="" min="0" max="120" type="number"/>
+<label class="block text-sm font-semibold text-primary mb-2 ml-1" for="profile-age" data-i18n="add_profile_age">Age</label>
+<input id="profile-age" class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:opacity-40 transition-all outline-none" data-i18n-placeholder="add_profile_age_ph" placeholder="Years" required="" min="0" max="120" type="number"/>
 <p id="age-error" class="hidden text-error text-xs font-semibold mt-2 ml-1"></p>
 </div>
 <div>
-<label class="block text-sm font-semibold text-primary mb-2 ml-1" for="profile-gender">Gender</label>
+<label class="block text-sm font-semibold text-primary mb-2 ml-1" for="profile-gender" data-i18n="add_profile_gender">Gender</label>
 <select id="profile-gender" class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface appearance-none outline-none" required="">
-<option disabled="" selected="" value="">Select</option>
-<option value="male">Male</option>
-<option value="female">Female</option>
-<option value="other">Other</option>
+<option disabled="" selected="" value="" data-i18n="add_profile_gender_ph">Select</option>
+<option value="male" data-i18n="gender_male">Male</option>
+<option value="female" data-i18n="gender_female">Female</option>
+<option value="other" data-i18n="gender_other">Other</option>
 </select>
 </div>
 </div>
 </div>
 <div class="pt-6">
-<button class="w-full btn-gradient py-4 rounded-lg text-white font-headline font-bold text-lg shadow-lg shadow-primary/20 active:scale-95 transition-all" type="submit">
-                        Continue
-                    </button>
+<button class="w-full btn-gradient py-4 rounded-lg text-white font-headline font-bold text-lg shadow-lg shadow-primary/20 active:scale-95 transition-all" id="save-btn" type="submit">
+<span id="save-spinner" class="material-symbols-outlined animate-spin hidden mr-2">sync</span>
+<span id="save-label" data-i18n="add_profile_btn">Continue</span>
+</button>
 </div>
 </form>
 </section>
 </main>
 <!-- BottomNavBar -->
 <!-- Translate Button -->
-<button onclick="openTranslatePage()" title="Translate" class="fixed top-3 z-[9999] right-16 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
+<button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page" class="fixed top-3 z-[9999] right-4 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm border border-white">
   <span class="material-symbols-outlined">translate</span>
 </button>
-<div id="google_translate_element" style="display:none;"></div>
 <script src="util.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app-config.js"></script>
-<script src="translate.js"></script>
-<script type="module">
-  import { db, requireAuth } from "./auth.js";
-  import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-
-  const U = window.SAHAYA_UTIL;
-  const currentUser = await requireAuth(); // redirects to login.html when signed out
-
-  const photoInput = document.getElementById('profile-photo-input');
-  const avatarPreview = document.getElementById('avatar-preview');
-  // Start with NO photo — a local SVG initials avatar is generated at render
-  // time for profiles without one. Never persist an external placeholder URL.
-  let photoDataUrl = '';
-
-  function compressImage(file, maxWidth, maxHeight, callback) {
-    const reader = new FileReader();
-    reader.onerror = () => U.toast('Could not read that image. Please try another.', 'error');
-    reader.onload = function(event) {
-      const img = new Image();
-      img.onerror = () => U.toast('That file is not a valid image.', 'error');
-      img.onload = function() {
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // Compress as JPEG with 70% quality to stay well under Firestore's 1MB doc limit
-        callback(canvas.toDataURL('image/jpeg', 0.7));
-      };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  if (photoInput) {
-    photoInput.addEventListener('change', function(e) {
-      if (e.target.files && e.target.files[0]) {
-        compressImage(e.target.files[0], 500, 500, function(compressedDataUrl) {
-           photoDataUrl = compressedDataUrl;
-           if (avatarPreview) avatarPreview.src = photoDataUrl;
-        });
-      }
-    });
-  }
-
-  const ageInput = document.getElementById('profile-age');
-  const ageError = document.getElementById('age-error');
-
-  function validateAge() {
-    const val = Number(ageInput.value);
-    if (!Number.isInteger(val) || val < 0 || val > 120) {
-      ageError.textContent = 'Please enter an age between 0 and 120.';
-      ageError.classList.remove('hidden');
-      return false;
-    }
-    ageError.classList.add('hidden');
-    return true;
-  }
-  if (ageInput) ageInput.addEventListener('input', validateAge);
-
-  const addProfileForm = document.getElementById('add-profile-form');
-  if (addProfileForm) {
-    addProfileForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const name = document.getElementById('profile-name').value.trim();
-      const gender = document.getElementById('profile-gender').value;
-      if (!validateAge()) {
-        ageInput.focus();
-        return;
-      }
-      const age = String(Number(ageInput.value));
-
-      const submitBtn = this.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = "Saving...";
-      submitBtn.disabled = true;
-
-      try {
-        await addDoc(collection(db, "profiles"), {
-          userId: currentUser.uid,
-          name: name,
-          age: age,
-          gender: gender,
-          photo: photoDataUrl, // '' when untouched — renderers fall back to initials
-          createdAt: new Date().toISOString()
-        });
-        window.location.href = 'index.html';
-      } catch (error) {
-        console.error("Error adding document: ", error);
-        U.toast("Failed to create profile. Please check your connection and try again.", 'error');
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }
-    });
-  }
-</script>
+</body>
+</html>
 </body></html>

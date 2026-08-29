@@ -109,8 +109,8 @@
 <!-- Profile Selection Section -->
 <section class="mb-16">
 <div class="mb-10 text-center">
-<h2 class="font-headline text-4xl font-extrabold text-primary tracking-tight mb-2">Welcome Back</h2>
-<p class="text-on-surface-variant text-lg">Who is using Sahaya today?</p>
+<h2 class="font-headline text-4xl font-extrabold text-primary tracking-tight mb-2" data-i18n="profiles_title">Welcome Back</h2>
+<p class="text-on-surface-variant text-lg" data-i18n="profiles_subtitle">Who is using Sahaya today?</p>
 </div>
 <div class="flex flex-col gap-6" id="profiles-container">
 <!-- User Profiles Rendered Here Dynamically -->
@@ -119,7 +119,7 @@
 <div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-md">
 <span class="material-symbols-outlined text-primary text-3xl">add</span>
 </div>
-<span class="font-headline font-bold text-primary">+ Add New Profile</span>
+<span class="font-headline font-bold text-primary"><span class="material-symbols-outlined align-middle !text-lg mr-1">add</span> <span data-i18n="profiles_add">+ Add New Profile</span></span>
 </button>
 </div>
 </section>
@@ -129,10 +129,10 @@
 <button onclick="openTranslatePage()" title="Translate" class="fixed top-3 z-[9999] right-16 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
   <span class="material-symbols-outlined">translate</span>
 </button>
-<div id="google_translate_element" style="display:none;"></div>
 <script src="util.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app-config.js"></script>
-<script src="translate.js"></script>
+<script src="i18n.js"></script>
+<script src="voice.js"></script>
 <script type="module" src="index.js"></script>
 </body></html>

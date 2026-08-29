@@ -116,14 +116,14 @@
 <!-- Login Container -->
 <main class="space-y-10">
 <div class="text-center space-y-2">
-<h2 class="font-headline font-bold text-2xl text-on-surface">Login to Sahaya</h2>
-<p class="text-on-surface-variant font-medium opacity-80">Access your health and wellness sanctuary</p>
+<h2 class="font-headline font-bold text-2xl text-on-surface" data-i18n="login_title">Welcome to Sahaya</h2>
+<p class="text-on-surface-variant font-medium opacity-80" data-i18n="login_subtitle">Your personal AI health assistant for the whole family</p>
 </div>
 <!-- Google Login -->
 <button id="google-login-btn" aria-label="Continue with Google" class="w-full bg-white text-on-surface flex items-center justify-center gap-3 font-headline font-bold py-4 px-6 rounded-2xl shadow-sm border border-outline-variant hover:bg-surface-container-lowest active:scale-95 transition-all text-[16px] tracking-wide disabled:opacity-60 disabled:pointer-events-none">
     <span id="google-login-spinner" class="material-symbols-outlined animate-spin hidden text-on-surface-variant">sync</span>
     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" aria-hidden="true" class="w-6 h-6"/>
-    <span id="google-login-label">Continue with Google</span>
+    <span id="google-login-label" data-i18n="login_google_btn">Continue with Google</span>
 </button>
 <p id="login-hint" class="hidden text-center text-sm text-on-surface-variant font-medium px-4"></p>
 <!-- Rural-Friendly Support Link -->
@@ -147,11 +147,11 @@
 <button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page" class="fixed top-3 z-[9999] right-4 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
   <span class="material-symbols-outlined">translate</span>
 </button>
-<div id="google_translate_element" style="display:none;"></div>
 <script src="util.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app-config.js"></script>
-<script src="translate.js"></script>
+<script src="i18n.js"></script>
+<script src="voice.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
   import { getAuth, signInWithCredential, signInWithRedirect, getRedirectResult, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
@@ -163,14 +163,26 @@
   const provider = new GoogleAuthProvider();
 
   const loginBtn = document.getElementById('google-login-btn');
-  const spinner = document.getElementById('google-login-spinner');
-  const label = document.getElementById('google-login-label');
-  const hint = document.getElementById('login-hint');
+  const loginSpinner = document.getElementById('google-login-spinner');
+  const loginLabel = document.getElementById('google-login-label');
+  const loginHint = document.getElementById('login-hint');
 
-  function setBusy(busy) {
-    loginBtn.disabled = busy;
-    spinner.classList.toggle('hidden', !busy);
-    label.textContent = busy ? 'Connecting…' : 'Continue with Google';
+  // Check language gate
+  const I18N = window.SAHAYA_I18N;
+  const Voice = window.SAHAYA_VOICE;
+  const t = I18N ? I18N.t.bind(I18N) : (k) => k;
+
+  if (I18N && !I18N.hasChosenLang()) {
+    window.location.href = 'language-gate.html';
+  } else {
+    // Play greeting if staying on login
+    if (Voice) Voice.greet('login_voice_greeting');
+  }
+
+  function setBusy(isBusy) {
+    loginBtn.disabled = isBusy;
+    loginSpinner.classList.toggle('hidden', !isBusy);
+    loginLabel.textContent = isBusy ? t('login_signing_in') : t('login_google_btn');
   }
 
   function friendlyAuthError(error) {

@@ -61,9 +61,8 @@
     <div class="grid grid-cols-2 gap-4" id="lang-grid"></div>
   </main>
 
-  <div id="google_translate_element" style="display:none;"></div>
-  <script src="translate.js"></script>
-  
+  <script src="i18n.js"></script>
+  <script src="voice.js"></script>
   <script>
     const LANGUAGES = [
       { code: 'en', name: 'English',    native: 'English',    flag: '🌐' },
@@ -96,29 +95,13 @@
     });
 
     function selectLang(code) {
-      localStorage.setItem('sahaya_lang', code);
-
-      if (code === 'en') {
-        // Reset to English — clear the cookie
-        document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
-        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
-        goBack();
-        return;
-      }
-
-      // Set googtrans cookie directly (most reliable — widget reads this on next page load)
-      document.cookie = 'googtrans=/en/' + code + '; path=/; SameSite=Lax';
-      document.cookie = 'googtrans=/en/' + code + '; SameSite=Lax';
-
-      // Also fire the hidden widget's combo so Google sets its own session cookie
-      var sel = document.querySelector('.goog-te-combo');
-      if (sel) {
-        sel.value = code;
-        sel.dispatchEvent(new Event('change'));
-        setTimeout(goBack, 800); // give Google ~800ms to process
+      const I18N = window.SAHAYA_I18N;
+      if (I18N) {
+          I18N.setLanguage(code);
       } else {
-        goBack();
+          localStorage.setItem('sahaya_lang', code);
       }
+      goBack();
     }
 
     function goBack() {

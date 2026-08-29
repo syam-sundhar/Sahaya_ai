@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "648285547085-vfg33fe3q2agooo5rkvhoiai24kbfob9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sahaya.app",
+            "certificate_hash": "d73242132913d5c13feeeb5cabaee5b737dddbee"
+          }
+        },
+        {
           "client_id": "648285547085-3e7qistutlqvp1flre9hhatg29383cvj.apps.googleusercontent.com",
           "client_type": 3
         }

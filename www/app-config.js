@@ -12,11 +12,15 @@ window.SAHAYA_BACKEND = {
     anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGNyZ2FyYXNvY3Joa2NoY3ZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDcxMDksImV4cCI6MjA5MDE4MzEwOX0.B6HwAdEBLa_1Ql20Z753ntNKXxoeLXzaLkdcBydsiHg",
     timeoutMs: 45000
   },
-  // Medicine label analysis function
   medicine: {
     base: "https://akubhszvwhfafwyhrvzt.supabase.co",
     analyzePath: "/functions/v1/analyze-medicine",
     anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrdWJoc3p2d2hmYWZ3eWhydnp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MjQwNTMsImV4cCI6MjA5MDIwMDA1M30.Uxfzp8boA7uPSYL7M5rDyg5cwt8IChtqs_75iCDCJmM",
     timeoutMs: 60000
+  },
+  // Google Cloud Services
+  google: {
+    // Replace with your Google Cloud API key to enable high-quality voices for all languages
+    ttsApiKey: "" 
   }
 };

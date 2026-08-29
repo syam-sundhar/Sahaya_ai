@@ -119,8 +119,8 @@
 <main class="flex-1 flex flex-col w-full max-w-4xl mx-auto px-4 pt-6 pb-32 relative">
 <!-- Context Header -->
 <div class="mb-8 text-center sm:text-left">
-<h2 class="font-headline text-3xl font-extrabold text-primary tracking-tight mb-2">Symptom Checker</h2>
-<p class="text-on-surface-variant max-w-md">Describe how you're feeling. Sahaya is here to assist with preliminary guidance and rural health support.</p>
+<h2 class="font-headline text-3xl font-extrabold text-primary tracking-tight mb-2" data-i18n="symptom_title">Symptom Checker</h2>
+<p class="text-on-surface-variant max-w-md" data-i18n="symptom_subtitle">Describe how you're feeling. Sahaya is here to assist with preliminary guidance.</p>
 </div>
 <!-- Chat History Container -->
 <div id="chat-container" class="space-y-6 flex flex-col pb-6">
@@ -135,26 +135,26 @@
                 <span class="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
                 <span class="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
             </div>
-            <span class="text-xs font-semibold text-primary/80 italic">Analyzing...</span>
+            <span class="text-xs font-semibold text-primary/80 italic" data-i18n="symptom_analyzing">Analyzing...</span>
         </div>
     </div>
 </div>
 </main>
 <!-- Translate Button -->
-<button onclick="openTranslatePage()" title="Translate" class="fixed top-3 z-[9999] right-4 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
+<button onclick="openTranslatePage()" title="Translate" aria-label="Translate" class="fixed top-3 z-[9999] right-4 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
   <span class="material-symbols-outlined">translate</span>
 </button>
-<div id="google_translate_element" style="display:none;"></div>
 <script src="util.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app-config.js"></script>
-<script src="translate.js"></script>
+<script src="i18n.js"></script>
+<script src="voice.js"></script>
 <!-- Bottom Action Bar / Input -->
 <div class="fixed bottom-0 left-0 w-full z-40 px-4 pb-8 pt-2 bg-gradient-to-t from-background via-background/95 to-transparent">
 <div class="max-w-4xl mx-auto flex items-center gap-3">
 <!-- Text Input Container -->
 <div class="flex-1 bg-surface-container-highest rounded-xl flex items-center px-4 py-2 shadow-inner border border-outline-variant/30">
-<input id="user-input" aria-label="Describe your symptoms" class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline text-[15px] font-medium py-2 outline-none" placeholder="Type more symptoms..." type="text"/>
+<input id="user-input" aria-label="Describe your symptoms" data-i18n-placeholder="symptom_placeholder" class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline text-[15px] font-medium py-2 outline-none" placeholder="Type your symptoms..." type="text"/>
 <button id="send-btn" aria-label="Send message" class="text-primary p-2 hover:bg-primary/10 rounded-full transition-colors active:scale-95">
 <span class="material-symbols-outlined" data-icon="send">send</span>
 </button>
@@ -170,7 +170,7 @@
 </div>
 <button class="text-white flex items-center gap-2 relative z-0">
 <span class="material-symbols-outlined" data-icon="mic" data-weight="fill" style="font-variation-settings: 'FILL' 1;">mic</span>
-<span id="mic-text" class="hidden sm:inline font-bold text-sm tracking-wide">SPEAK</span>
+<span id="mic-text" class="hidden sm:inline font-bold text-sm tracking-wide" data-i18n="symptom_mic_speak">SPEAK</span>
 </button>
 </div>
 </div>
@@ -179,8 +179,12 @@
 <script type="module">
     import { db, requireAuth } from "./auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import { saveAssessment, getPastAssessmentSummaries } from "./history-store.js";
 
     const U = window.SAHAYA_UTIL;
+    const I18N = window.SAHAYA_I18N;
+    const Voice = window.SAHAYA_VOICE;
+    const t = I18N ? I18N.t.bind(I18N) : (k) => k;
 
     let messages = [];
     let awaitingReply = false;
@@ -193,23 +197,13 @@
     const micWaves = document.getElementById('mic-waves');
     const micText = document.getElementById('mic-text');
 
-    // Language configuration
-    const langCode = localStorage.getItem('sahaya_lang') || 'en';
-    const langMap = {
-        en: 'English', hi: 'Hindi', ta: 'Tamil', te: 'Telugu',
-        kn: 'Kannada', ml: 'Malayalam', bn: 'Bengali', mr: 'Marathi',
-        gu: 'Gujarati', pa: 'Punjabi'
-    };
-    const speechCodeMap = {
-        en: 'en-IN', hi: 'hi-IN', ta: 'ta-IN', te: 'te-IN',
-        kn: 'kn-IN', ml: 'ml-IN', bn: 'bn-IN', mr: 'mr-IN',
-        gu: 'gu-IN', pa: 'pa-IN'
-    };
-    const langName = langMap[langCode] || 'English';
-    const speechCode = speechCodeMap[langCode] || 'en-IN';
+    // Language configuration — from i18n.js
+    const langCode = I18N ? I18N.getLang() : 'en';
+    const langName = I18N ? I18N.getLangName() : 'English';
+    const speechCode = I18N ? I18N.getSpeechCode() : 'en-IN';
 
     // ── Auth + patient context ────────────────────────────────────────────────
-    const user = await requireAuth(); // redirects to login.html when signed out
+    const user = await requireAuth();
     const profileId = sessionStorage.getItem('currentProfileId') || '-';
 
     // Back link keeps the selected profile.
@@ -218,7 +212,7 @@
         backLink.href = 'dashboard.html?id=' + encodeURIComponent(profileId);
     }
 
-    // Show the REAL selected patient instead of a hardcoded name.
+    // Show the REAL selected patient.
     let profileData = null;
     try {
         const snap = await getDoc(doc(db, "profiles", profileId));
@@ -238,131 +232,92 @@
         if (block) block.style.display = 'none';
     }
 
+    // ── Load health context for Gemini ────────────────────────────────────────
+    // Gemini receives past health issues so it can give better suggestions.
+    let healthContext = null;
+    try {
+        // Weight history
+        const weightHistory = profileData && profileData.weightHistory ? profileData.weightHistory : {};
+        const weightKeys = Object.keys(weightHistory).sort().reverse();
+        const latestWeight = weightKeys.length > 0 ? weightHistory[weightKeys[0]] : null;
+
+        // Blood history
+        const bloodHistory = profileData && profileData.bloodHistory ? profileData.bloodHistory : [];
+        const sortedBlood = [...bloodHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const latestBlood = sortedBlood.length > 0 ? sortedBlood[0] : null;
+
+        // Past assessment summaries from Firestore
+        let pastAssessments = [];
+        try {
+            pastAssessments = await getPastAssessmentSummaries(db, user.uid, profileId, 5);
+        } catch (e) {
+            console.warn("Could not load past assessments:", e);
+        }
+
+        healthContext = {
+            latestWeight: latestWeight,
+            latestBloodSugar: latestBlood ? latestBlood.sugar : null,
+            latestHemoglobin: latestBlood ? latestBlood.hemoglobin : null,
+            bloodGroup: profileData ? profileData.bloodGroup : null,
+            pastAssessments: pastAssessments,
+            pastAssessmentCount: pastAssessments.length,
+            pastRiskLevels: pastAssessments.map(a => a.riskLevel)
+        };
+    } catch (e) {
+        console.warn("Could not build health context:", e);
+    }
+
     // ── Chat storage: scoped per user + profile ───────────────────────────────
     const saveMessages = () =>
         U.scopedSetItem('sahaya_chat', user.uid, profileId, JSON.stringify(messages));
 
-    // ── Speech Recognition ────────────────────────────────────────────────────
-    // Android WebView does NOT support webkitSpeechRecognition, so inside the
-    // Capacitor app we call the native @capacitor-community/speech-recognition
-    // plugin through the Plugins proxy. On the web/PWA build we fall back to
-    // the Web Speech API.
+    // ── Voice Input via voice.js ──────────────────────────────────────────────
     let isListening = false;
 
     function stopListeningUI() {
         isListening = false;
         micWaves.classList.add('hidden');
         micWaves.classList.remove('flex');
-        micText.textContent = "SPEAK";
+        micText.textContent = t('symptom_mic_speak');
     }
 
     function startListeningUI() {
         isListening = true;
         micWaves.classList.remove('hidden');
         micWaves.classList.add('flex');
-        micText.textContent = "LISTENING";
+        micText.textContent = t('symptom_mic_listening');
     }
 
-    function handleNativeResult(transcript) {
-        stopListeningUI();
-        if (transcript) {
-            userInput.value = transcript;
-            handleSend();
-        }
-    }
+    micBtn.addEventListener('click', async () => {
+        if (awaitingReply) return;
 
-    if (window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()
-            && Capacitor.Plugins && Capacitor.Plugins.SpeechRecognition) {
-        const nativeSR = Capacitor.Plugins.SpeechRecognition;
-
-        micBtn.addEventListener('click', async () => {
-            try {
-                if (isListening) {
-                    await nativeSR.stop();
-                    stopListeningUI();
-                    return;
-                }
-                let avail;
-                try { avail = await nativeSR.available(); } catch (e) { avail = true; }
-                if (avail === false) {
-                    U.toast("Speech recognition isn't available on this device.", 'error');
-                    return;
-                }
-                try {
-                    const perm = await nativeSR.checkPermissions();
-                    if (perm.speechRecognition !== 'granted') {
-                        const req = await nativeSR.requestPermissions();
-                        if (req.speechRecognition !== 'granted') {
-                            U.toast("Please allow microphone access to use voice input.", 'error');
-                            return;
-                        }
-                    }
-                } catch (e) { /* permission API differences — let start() surface errors */ }
-
-                startListeningUI();
-                const result = await nativeSR.start({
-                    language: speechCode,
-                    maxResults: 1,
-                    partialResults: false
-                });
-                handleNativeResult(result && result.matches && result.matches[0]);
-            } catch (err) {
-                console.error('Native speech recognition error:', err);
-                stopListeningUI();
-                U.toast("Voice input didn't work. Please try again or type instead.", 'error');
-            }
-        });
-    } else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const WebSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new WebSpeechRecognition();
-        recognition.continuous = false;
-        recognition.lang = speechCode;
-        recognition.interimResults = false;
-
-        recognition.onstart = startListeningUI;
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            handleNativeResult(transcript);
-        };
-        recognition.onerror = (event) => {
-            console.error('Speech recognition error', event.error);
-            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                U.toast("Please allow microphone access to use voice input.", 'error');
-            }
+        if (isListening) {
+            if (Voice) Voice.stopListening();
             stopListeningUI();
-        };
-        recognition.onend = stopListeningUI;
+            return;
+        }
 
-        micBtn.addEventListener('click', () => {
-            if (isListening) {
-                recognition.stop();
-            } else {
-                try { recognition.start(); }
-                catch (e) { stopListeningUI(); }
-            }
-        });
-    } else {
-        micBtn.addEventListener('click', () => {
-            U.toast("Voice input isn't supported here — please type your symptoms.", 'info');
-        });
-    }
+        // Stop any ongoing TTS before listening
+        if (Voice) Voice.stopSpeaking();
 
-    // ── Text-to-Speech (guarded — some WebViews lack an engine) ──────────────
-    function speakText(text) {
+        startListeningUI();
         try {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Cancel any ongoing speech
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = speechCode;
-                utterance.rate = 1.0;
-                const voices = window.speechSynthesis.getVoices();
-                const matchingVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(langCode));
-                if (matchingVoice) utterance.voice = matchingVoice;
-                window.speechSynthesis.speak(utterance);
+            const transcript = await Voice.listen(langCode);
+            stopListeningUI();
+            if (transcript && transcript.trim()) {
+                userInput.value = transcript;
+                handleSend();
             }
         } catch (e) {
-            /* No TTS engine on this device — stay silent rather than crash. */
+            console.error('Voice listen error:', e);
+            stopListeningUI();
+            U.toast(t('error_generic'), 'error');
         }
+    });
+
+    // ── Text-to-Speech via voice.js ──────────────────────────────────────────
+    function speakText(text) {
+        if (Voice) Voice.speak(text, langCode);
     }
 
     // ── UI helpers ────────────────────────────────────────────────────────────
@@ -371,7 +326,6 @@
         const msgDiv = document.createElement('div');
         msgDiv.className = role === 'assistant' ? "flex justify-start w-full gap-3" : "flex justify-end w-full";
 
-        // XSS-safe: untrusted text goes through escapeHtml before template use.
         const displayContent = U.escapeHtml(String(content).replace(/\*\*/g, ''));
 
         if (role === 'assistant') {
@@ -412,6 +366,38 @@
 
         const cfg = window.SAHAYA_BACKEND.chat;
 
+        if (messages.length === 0) {
+            let contextStr = `PATIENT CONTEXT:\n`;
+            if (profileData) {
+                contextStr += `Patient Profile: Name: ${profileData.name}, Age: ${profileData.age}, Gender: ${profileData.gender}\n`;
+            } else {
+                contextStr += `Patient Profile: Unknown\n`;
+            }
+            if (healthContext) {
+                contextStr += `Health History:\n`;
+                if (healthContext.latestWeight) contextStr += `- Latest Weight: ${healthContext.latestWeight} kg\n`;
+                if (healthContext.bloodGroup) contextStr += `- Blood Group: ${healthContext.bloodGroup}\n`;
+                if (healthContext.latestBloodSugar) contextStr += `- Latest Blood Sugar: ${healthContext.latestBloodSugar} mg/dL\n`;
+                if (healthContext.latestHemoglobin) contextStr += `- Latest Hemoglobin: ${healthContext.latestHemoglobin} g/dL\n`;
+                
+                if (healthContext.pastAssessments && healthContext.pastAssessments.length > 0) {
+                    contextStr += `- Past Assessments:\n`;
+                    healthContext.pastAssessments.forEach((a, i) => {
+                        contextStr += `  ${i+1}. ${a.summary} (Risk: ${a.riskLevel})\n`;
+                    });
+                } else {
+                    contextStr += `- No recent past assessments recorded.\n`;
+                }
+            } else {
+                contextStr += `No Health History.\n`;
+            }
+
+            const pName = profileData && profileData.name ? profileData.name : 'the patient';
+            const starterContent = `[SYSTEM INSTRUCTION]\n${contextStr}\n\nStart the consultation. Greet ${pName} warmly and ask your first question about their health concern. Respond in ${langName}.`;
+            
+            messages.push({ role: 'user', content: starterContent, hidden: true });
+        }
+
         try {
             const data = await U.fetchJson(cfg.url, {
                 method: 'POST',
@@ -422,13 +408,7 @@
                 body: JSON.stringify({
                     messages: messages,
                     language: langName,
-                    languageCode: langCode,
-                    // Patient context so the AI can personalise safely (ignored by older functions).
-                    patient: profileId !== '-' && profileData ? {
-                        name: profileData.name,
-                        age: profileData.age,
-                        gender: profileData.gender
-                    } : null
+                    languageCode: langCode
                 })
             }, cfg.timeoutMs);
 
@@ -444,7 +424,29 @@
                     donts: data.donts || []
                 };
                 U.scopedSetItem('sahaya_result', user.uid, profileId, JSON.stringify(assessmentResult));
-                U.scopedRemoveItem('sahaya_chat', user.uid, profileId); // assessment done
+                U.scopedRemoveItem('sahaya_chat', user.uid, profileId);
+
+                // ── Save to Firestore history ────────────────────────────────
+                try {
+                    await saveAssessment(db, user.uid, profileId, {
+                        riskLevel: data.riskLevel,
+                        summary: data.summary,
+                        content: data.content,
+                        dos: data.dos || [],
+                        donts: data.donts || [],
+                        chatMessages: messages,
+                        language: langCode,
+                        patientData: profileData ? {
+                            name: profileData.name,
+                            age: profileData.age,
+                            gender: profileData.gender
+                        } : null,
+                        healthContext: healthContext
+                    });
+                } catch (histErr) {
+                    console.error("Failed to save assessment to history:", histErr);
+                    // Non-blocking — results page still works from localStorage.
+                }
 
                 const finalMsgDiv = document.createElement('div');
                 finalMsgDiv.className = "flex flex-col items-start gap-4 mt-2 mb-8";
@@ -452,19 +454,19 @@
                 <div class="flex items-center gap-3 self-start">
                     <div class="bg-surface-container-low px-4 py-2 rounded-full flex items-center gap-3">
                         <span class="material-symbols-outlined text-primary" style="font-size: 18px;">check_circle</span>
-                        <span class="text-xs font-semibold text-primary/80 italic">Assessment Complete</span>
+                        <span class="text-xs font-semibold text-primary/80 italic" data-i18n="symptom_assessment_complete">${t('symptom_assessment_complete')}</span>
                     </div>
                 </div>
                 <div class="w-full flex justify-center py-4">
                     <a class="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm tracking-widest flex items-center gap-2 shadow-lg hover:bg-primary/90 transition-all active:scale-95 uppercase" href="results.html">
-                        View Assessment Result
+                        ${t('symptom_view_result')}
                         <span class="material-symbols-outlined !text-lg" data-icon="arrow_forward">arrow_forward</span>
                     </a>
                 </div>
                 `;
                 chatContainer.appendChild(finalMsgDiv);
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                speakText("My assessment is complete. Redirecting you to the results.");
+                speakText(t('symptom_assessment_complete'));
 
                 setTimeout(() => {
                     window.location.href = 'results.html';
@@ -474,8 +476,7 @@
             }
         } catch (error) {
             console.error("AI request failed:", error);
-            addMessageToUI('assistant', error.message ||
-                "Something went wrong. Please check your connection and try again.");
+            addMessageToUI('assistant', error.message || t('error_generic'));
         } finally {
             typingIndicator.classList.add('hidden');
             typingIndicator.classList.remove('flex');
@@ -484,25 +485,22 @@
     }
 
     function handleSend() {
-        if (awaitingReply) return; // one request at a time
+        if (awaitingReply) return;
         const text = userInput.value.trim();
         if (!text) return;
 
         userInput.value = '';
-
         addMessageToUI('user', text);
         messages.push({ role: 'user', content: text });
         saveMessages();
 
-        try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch (e) { /* noop */ }
-
+        if (Voice) Voice.stopSpeaking();
         fetchAIResponse();
     }
 
     // ── Init conversation ─────────────────────────────────────────────────────
     (function initChat() {
         const savedChat = U.scopedGetItem('sahaya_chat', user.uid, profileId);
-
         let shouldFetchInitial = true;
 
         if (savedChat) {
@@ -510,7 +508,11 @@
                 const parsed = JSON.parse(savedChat);
                 if (parsed && parsed.length > 0) {
                     messages = parsed.filter(m => m && (m.role === 'user' || m.role === 'assistant'));
-                    messages.forEach(msg => addMessageToUI(msg.role, msg.content, true));
+                    messages.forEach(msg => {
+                        if (!msg.hidden) {
+                            addMessageToUI(msg.role, msg.content, true);
+                        }
+                    });
                     shouldFetchInitial = false;
                     setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }), 100);
                 }
@@ -521,23 +523,23 @@
         }
 
         if (shouldFetchInitial) {
+            // Play voice greeting before first AI fetch
+            if (Voice) Voice.greet('symptom_voice_greeting');
             fetchAIResponse();
         }
     })();
 
     sendBtn.addEventListener('click', handleSend);
     userInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            handleSend();
-        }
+        if (e.key === 'Enter') handleSend();
     });
 
-    // Preload TTS voices where supported (no-op otherwise).
-    try {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.getVoices();
-        }
-    } catch (e) { /* noop */ }
+    // Translate page navigation
+    window.openTranslatePage = function () {
+        var page = window.location.href.split('/').pop().split('?')[0];
+        localStorage.setItem('sahaya_translate_return', page);
+        window.location.href = 'translate.html';
+    };
 </script>
 </body>
 </html>

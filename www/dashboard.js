@@ -2,6 +2,9 @@ import { db, requireAuth } from "./auth.js";
 import { doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 const U = window.SAHAYA_UTIL;
+const I18N = window.SAHAYA_I18N;
+const Voice = window.SAHAYA_VOICE;
+const t = I18N ? I18N.t.bind(I18N) : (k) => k;
 
 const urlParams = new URLSearchParams(window.location.search);
 let profileId = urlParams.get('id');
@@ -32,12 +35,12 @@ try {
     currentProfileData = docSnap.data();
     populateProfileUI(currentProfileData);
   } else {
-    U.toast("Profile not found or you don't have access to it.", 'error');
+    U.toast(t('error_generic'), 'error');
     setTimeout(() => { window.location.href = 'index.html'; }, 1200);
   }
 } catch (error) {
   console.error("Error fetching profile:", error);
-  U.toast("Error loading profile. Please check your connection.", 'error');
+  U.toast(t('error_generic'), 'error');
 }
 
 function populateProfileUI(data) {
@@ -55,6 +58,9 @@ function populateProfileUI(data) {
       genderItem.style.display = 'inline-block';
       genderItem.innerText = data.gender.charAt(0).toUpperCase() + data.gender.slice(1);
   }
+
+  // Voice greeting for the dashboard
+  if (Voice) Voice.greet('dash_voice_greeting', { name: data.name || '' });
 
   // Blood Details Pre-fill (latest off history or legacy bloodDetails array)
   if (data.bloodHistory && data.bloodHistory.length > 0) {

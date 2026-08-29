@@ -2,6 +2,9 @@ import { auth, db, requireAuth, logout } from "./auth.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 const U = window.SAHAYA_UTIL;
+const I18N = window.SAHAYA_I18N;
+const Voice = window.SAHAYA_VOICE;
+const t = I18N ? I18N.t.bind(I18N) : (k) => k;
 
 // Log out button (header)
 const logoutBtn = document.getElementById('logout-btn');
@@ -18,6 +21,9 @@ if (logoutBtn) {
 
   const profilesContainer = document.getElementById('profiles-container');
   if (!profilesContainer) return;
+
+  // Voice greeting for profile selection
+  if (Voice) Voice.greet('profiles_voice_greeting');
 
   // Find the add profile button so we can insert before it
   let addCardBtn = null;
@@ -36,7 +42,7 @@ if (logoutBtn) {
     if (querySnapshot.empty) {
       const empty = document.createElement('p');
       empty.className = "text-center text-on-surface-variant font-medium";
-      empty.textContent = "No profiles yet. Create one to get started.";
+      empty.textContent = t('profiles_empty');
       profilesContainer.insertBefore(empty, addCardBtn);
     }
 

@@ -99,9 +99,9 @@
 <!-- TopAppBar -->
 <header class="bg-[#F8EBE9] dark:bg-slate-900 docked full-width top-0 z-50 flex justify-between items-center px-6 py-4 w-full no-border tonal-shift-bg-surface-container flat no-shadows">
 <div class="flex items-center gap-4">
-<button class="text-[#366759] dark:text-[#7CAE9E] hover:bg-[#CFECE0]/50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200 ease-in-out p-2 rounded-full flex items-center gap-1" onclick="window.location.href='index.html'">
+<button class="text-[#366759] hover:bg-[#CFECE0]/50 transition-colors active:scale-95 duration-200 ease-in-out p-2 rounded-full flex items-center gap-1" onclick="window.location.href='index.html'">
 <span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
-<span class="text-sm font-semibold sm:inline hidden">Back</span>
+<span class="text-sm font-semibold sm:inline hidden" data-i18n="back">Back</span>
 </button>
 <h1 class="font-['Manrope'] font-bold text-xl tracking-tight text-2xl font-extrabold text-[#366759] dark:text-[#7CAE9E] tracking-tighter">Sahaya</h1>
 </div>
@@ -131,18 +131,31 @@
     <!-- Check Symptoms -->
     <button class="button-gradient flex-1 flex flex-col items-center justify-center p-6 rounded-2xl shadow-[0_8px_30px_rgb(54,103,89,0.15)] active:scale-[0.98] transition-all duration-200 group" onclick="window.location.href='check-symptoms.html'">
       <div class="bg-white/20 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform">
-        <span class="material-symbols-outlined text-white text-3xl" data-icon="medical_services" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+        <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">medical_services</span>
       </div>
-      <span class="text-white font-headline text-lg font-bold">Check Symptoms</span>
+      <span class="text-white font-headline text-lg font-bold" data-i18n="dash_check_symptoms">Check Symptoms</span>
+      <span class="text-white/80 text-xs mt-1" data-i18n="dash_check_symptoms_desc">Talk to Sahaya about how you're feeling</span>
     </button>
-    <!-- View Results -->
-    <button class="bg-surface-container-lowest flex-1 flex flex-col items-center justify-center p-6 rounded-2xl shadow-[0_4px_15px_rgb(32,26,25,0.05)] border border-primary-container/20 active:scale-[0.98] transition-all duration-200 group" onclick="window.location.href='results.html'">
+    <!-- Scan Medicine -->
+    <button class="bg-surface-container-lowest flex-1 flex flex-col items-center justify-center p-6 rounded-2xl shadow-sm border border-primary-container/20 active:scale-[0.98] transition-all duration-200 group" onclick="window.location.href='scan-medicine.html'">
       <div class="bg-primary-container/10 p-3 rounded-full mb-3 group-hover:scale-110 transition-transform">
-        <span class="material-symbols-outlined text-primary text-3xl" data-icon="assignment_turned_in" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+        <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">pill</span>
       </div>
-      <span class="text-primary font-headline text-lg font-bold">View Results</span>
+      <span class="text-primary font-headline text-lg font-bold" data-i18n="dash_scan_medicine">Scan Medicine</span>
+      <span class="text-on-surface-variant/80 text-xs mt-1" data-i18n="dash_scan_medicine_desc">Scan a medicine label</span>
     </button>
   </div>
+
+  <!-- Assessment History -->
+  <button class="w-full bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-primary-container/20 active:scale-[0.98] transition-all duration-200 group flex items-center gap-5 text-left" onclick="window.location.href='chat-history.html'">
+      <div class="bg-secondary/10 p-4 rounded-xl group-hover:scale-110 transition-transform shrink-0">
+        <span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">history</span>
+      </div>
+      <div>
+        <h3 class="text-on-surface font-headline text-xl font-bold" data-i18n="dash_history">Assessment History</h3>
+        <p class="text-on-surface-variant text-sm mt-1" data-i18n="dash_history_desc">View past consultations and download reports</p>
+      </div>
+  </button>
 
   <!-- Special Sections -->
   <div class="w-full space-y-4">
@@ -156,8 +169,7 @@
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">monitor_weight</span>
           </div>
           <div>
-            <h4 class="font-headline font-bold text-on-surface">Weight Dashboard</h4>
-            <p class="text-xs text-on-surface-variant">Track your progress</p>
+            <h4 class="font-headline font-bold text-on-surface" data-i18n="dash_weight">Current Weight</h4>
           </div>
         </div>
       </div>
@@ -167,7 +179,7 @@
         <div class="flex justify-between items-end mb-2">
            <div>
              <p id="current-weight-display" class="font-headline text-2xl font-black text-primary">--<span class="text-sm font-bold text-primary/70 ml-1">kg</span></p>
-             <p class="text-xs text-on-surface-variant font-medium">Current Weight</p>
+             <p class="text-xs text-on-surface-variant font-medium" data-i18n="dash_weight">Current Weight</p>
            </div>
         </div>
         
@@ -178,8 +190,8 @@
       </div>
 
       <div class="flex gap-2 relative border-t border-surface-dim pt-4 mt-2">
-        <input type="number" placeholder="Enter new weight" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface font-medium" id="weight-input">
-        <button id="weight-submit-btn" class="bg-primary text-white font-bold text-sm px-4 py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1 w-24">Update</button>
+        <input type="number" data-i18n-placeholder="dash_weight_placeholder" placeholder="Enter weight in kg" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface font-medium" id="weight-input">
+        <button id="weight-submit-btn" class="bg-primary text-white font-bold text-sm px-4 py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1 w-24" data-i18n="dash_weight_update">Update</button>
       </div>
     </div>
 
@@ -191,8 +203,7 @@
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bloodtype</span>
           </div>
           <div>
-            <h4 class="font-headline font-bold text-on-surface">Blood Details</h4>
-            <p class="text-xs text-on-surface-variant">Update every 3-6 months</p>
+            <h4 class="font-headline font-bold text-on-surface" data-i18n="dash_blood">Blood Details</h4>
           </div>
         </div>
         <button onclick="window.location.href='blood_details_history.html'" class="text-xs bg-[#ba1a1a]/10 text-[#ba1a1a] font-bold px-3 py-1.5 rounded-lg active:scale-95 transition-transform flex items-center gap-1 hover:bg-[#ba1a1a]/20">
@@ -202,13 +213,13 @@
       </div>
       <div class="space-y-3">
         <div class="flex gap-2">
-          <input id="blood-sugar" type="number" inputmode="decimal" min="1" max="2000" placeholder="Blood Sugar (mg/dL)" aria-label="Blood sugar in milligrams per deciliter" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
-          <input id="hemoglobin" type="number" inputmode="decimal" min="1" max="30" step="0.1" placeholder="Hemoglobin (g/dL)" aria-label="Hemoglobin in grams per deciliter" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
+          <input id="blood-sugar" type="number" inputmode="decimal" min="1" max="2000" data-i18n-placeholder="dash_blood_sugar" placeholder="Blood Sugar (mg/dL)" aria-label="Blood sugar in milligrams per deciliter" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
+          <input id="hemoglobin" type="number" inputmode="decimal" min="1" max="30" step="0.1" data-i18n-placeholder="dash_blood_hemoglobin" placeholder="Hemoglobin (g/dL)" aria-label="Hemoglobin in grams per deciliter" class="flex-1 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
         </div>
         <div>
-          <input id="blood-amount" type="text" maxlength="40" placeholder="Amount of Blood (e.g., 450ml)" aria-label="Amount of blood donated, e.g. 450ml" class="w-full bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
+          <input id="blood-amount" type="text" maxlength="40" placeholder="Blood Group / Notes" aria-label="Blood Group / Notes" class="w-full bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary px-4 py-3 text-sm text-on-surface">
         </div>
-        <button id="blood-submit-btn" class="w-full bg-primary/10 text-primary font-bold text-sm py-3 rounded-xl hover:bg-primary/20 transition-all active:scale-95">Save Blood Details</button>
+        <button id="blood-submit-btn" class="w-full bg-primary/10 text-primary font-bold text-sm py-3 rounded-xl hover:bg-primary/20 transition-all active:scale-95" data-i18n="dash_blood_save">Save Blood Details</button>
       </div>
     </div>
   </div>
@@ -219,10 +230,10 @@
 <button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page" class="fixed top-3 z-[9999] right-16 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
   <span class="material-symbols-outlined">translate</span>
 </button>
-<div id="google_translate_element" style="display:none;"></div>
 <script src="util.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app-config.js"></script>
-<script src="translate.js"></script>
+<script src="i18n.js"></script>
+<script src="voice.js"></script>
 <script type="module" src="dashboard.js"></script>
 </body></html>

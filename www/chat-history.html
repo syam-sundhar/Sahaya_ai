@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SAHAYA - Assessment History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background": "#fff8f7",
+          "on-surface-variant": "#404945",
+          "error": "#ba1a1a",
+          "tertiary-container": "#79adad",
+          "on-primary-container": "#0c4236",
+          "surface-container-highest": "#ece0de",
+          "secondary-container": "#fec0b3",
+          "on-background": "#201a19",
+          "secondary": "#815248",
+          "surface-variant": "#ece0de",
+          "on-surface": "#201a19",
+          "surface-dim": "#e4d7d5",
+          "error-container": "#ffdad6",
+          "surface": "#fff8f7",
+          "on-secondary-container": "#7a4c42",
+          "outline": "#707975",
+          "outline-variant": "#c0c8c4",
+          "primary": "#366759",
+          "on-error-container": "#93000a",
+          "primary-container": "#7cae9e",
+          "surface-container": "#f8ebe9",
+          "surface-container-low": "#fef1ef",
+          "on-primary": "#ffffff",
+        },
+        fontFamily: { "headline": ["Manrope"], "body": ["Inter"], "label": ["Inter"] },
+        borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "full": "9999px" },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  body { min-height: max(884px, 100dvh); }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+</style>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="manifest" href="manifest.json">
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col">
+
+<!-- Header -->
+<header class="bg-[#F8EBE9] dark:bg-stone-900 flex justify-between items-center px-6 py-4 w-full sticky top-0 z-50">
+  <div class="flex items-center gap-4">
+    <a id="history-back-link" aria-label="Back to dashboard"
+       class="text-[#366759] hover:bg-[#CFECE0]/50 transition-colors p-2 rounded-full active:scale-95 flex items-center" href="dashboard.html">
+      <span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+      <span class="ml-1 font-bold text-sm hidden sm:inline" data-i18n="back">BACK</span>
+    </a>
+    <h1 class="font-headline font-black text-[#366759] tracking-widest text-2xl">SAHAYA</h1>
+  </div>
+  <div class="flex items-center gap-3">
+    <div class="text-right hidden sm:block">
+      <p class="text-xs font-bold text-primary uppercase tracking-tighter" data-i18n="symptom_current_patient">Current Patient</p>
+      <p id="patient-name" class="text-sm font-semibold text-on-surface">&nbsp;</p>
+    </div>
+    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#BFF5F5] to-[#CFECE0] p-0.5">
+      <img id="patient-avatar" alt="Profile" class="w-full h-full rounded-full object-cover border-2 border-white" src="logo.png"/>
+    </div>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="flex-1 flex flex-col w-full max-w-4xl mx-auto px-4 pt-6 pb-8">
+  <!-- Title -->
+  <div class="mb-8 text-center sm:text-left">
+    <h2 class="font-headline text-3xl font-extrabold text-primary tracking-tight mb-2" data-i18n="history_title">Assessment History</h2>
+    <p id="history-subtitle" class="text-on-surface-variant max-w-md" data-i18n="history_subtitle">View past consultations and download reports</p>
+  </div>
+
+  <!-- Loading state -->
+  <div id="loading-state" class="flex flex-col items-center justify-center py-16">
+    <div class="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
+    <p class="text-on-surface-variant font-medium" data-i18n="loading">Loading...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div id="empty-state" class="hidden flex-col items-center justify-center py-16 text-center">
+    <div class="w-20 h-20 bg-surface-container rounded-3xl flex items-center justify-center mb-6 shadow-sm">
+      <span class="material-symbols-outlined text-outline text-4xl">history</span>
+    </div>
+    <p class="text-on-surface-variant font-medium max-w-sm mb-6" data-i18n="history_empty">No assessments yet. Start a symptom check to create your first report.</p>
+    <a href="check-symptoms.html" class="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm tracking-widest flex items-center gap-2 shadow-lg hover:bg-primary/90 transition-all active:scale-95 uppercase">
+      <span class="material-symbols-outlined !text-lg">add</span>
+      <span data-i18n="dash_check_symptoms">Check Symptoms</span>
+    </a>
+  </div>
+
+  <!-- Assessment cards list -->
+  <div id="assessments-list" class="hidden space-y-4"></div>
+</main>
+
+<!-- Translate FAB -->
+<button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page"
+  class="fixed top-3 z-[9999] right-4 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm">
+  <span class="material-symbols-outlined">translate</span>
+</button>
+
+<script src="util.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app-config.js"></script>
+<script src="i18n.js"></script>
+<script src="voice.js"></script>
+
+<script type="module">
+  import { db, requireAuth } from "./auth.js";
+  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+  import { getAssessments, deleteAssessment } from "./history-store.js";
+  import { downloadReport } from "./report-generator.js";
+
+  var U = window.SAHAYA_UTIL;
+  var I18N = window.SAHAYA_I18N;
+  var t = I18N ? I18N.t.bind(I18N) : function (k) { return k; };
+
+  var user = await requireAuth();
+  var profileId = sessionStorage.getItem('currentProfileId') || '-';
+
+  // Back link
+  var backLink = document.getElementById('history-back-link');
+  if (backLink && profileId !== '-') {
+    backLink.href = 'dashboard.html?id=' + encodeURIComponent(profileId);
+  }
+
+  // Load patient info
+  var profileData = null;
+  try {
+    var snap = await getDoc(doc(db, "profiles", profileId));
+    if (snap.exists() && snap.data().userId === user.uid) {
+      profileData = snap.data();
+      var nameEl = document.getElementById('patient-name');
+      var avatarEl = document.getElementById('patient-avatar');
+      if (nameEl) nameEl.textContent = profileData.name || '';
+      if (avatarEl && profileId !== '-') avatarEl.src = U.profilePhoto(profileData);
+    }
+  } catch (e) {
+    console.error("Could not load patient profile:", e);
+  }
+
+  // Load assessments
+  var loadingState = document.getElementById('loading-state');
+  var emptyState = document.getElementById('empty-state');
+  var listContainer = document.getElementById('assessments-list');
+
+  try {
+    var assessments = await getAssessments(db, user.uid, profileId, 50);
+
+    loadingState.classList.add('hidden');
+
+    if (assessments.length === 0) {
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+    } else {
+      listContainer.classList.remove('hidden');
+      renderAssessments(assessments);
+    }
+  } catch (err) {
+    console.error("Error loading assessments:", err);
+    loadingState.classList.add('hidden');
+    emptyState.classList.remove('hidden');
+    emptyState.classList.add('flex');
+    U.toast(t('error_generic'), 'error');
+  }
+
+  function renderAssessments(list) {
+    listContainer.innerHTML = '';
+
+    list.forEach(function (assessment, idx) {
+      var card = document.createElement('div');
+      card.className = 'bg-surface-container-low rounded-2xl p-6 shadow-sm border border-outline-variant/20 ' +
+        'hover:shadow-md transition-all fade-in';
+      card.style.animationDelay = (idx * 0.08) + 's';
+
+      // Date
+      var dateStr = '';
+      if (assessment.createdAt && assessment.createdAt.toDate) {
+        var d = assessment.createdAt.toDate();
+        dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) +
+          ' at ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      }
+
+      // Risk level colors
+      var risk = String(assessment.riskLevel || 'Unknown').toLowerCase();
+      var riskBg = 'bg-[#CFECE0]';
+      var riskText = 'text-[#366759]';
+      if (risk === 'high') { riskBg = 'bg-[#FFDAD6]'; riskText = 'text-[#ba1a1a]'; }
+      else if (risk === 'moderate') { riskBg = 'bg-[#FEC0B3]'; riskText = 'text-[#815248]'; }
+
+      var summaryText = U.escapeHtml(
+        String(assessment.summary || assessment.fullContent || 'Assessment').substring(0, 120)
+      );
+      if ((assessment.summary || assessment.fullContent || '').length > 120) summaryText += '…';
+
+      card.innerHTML =
+        '<div class="flex items-start justify-between mb-3">' +
+          '<div class="flex-1">' +
+            '<div class="flex items-center gap-3 mb-2 flex-wrap">' +
+              '<span class="' + riskBg + ' ' + riskText + ' text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wide">' +
+                U.escapeHtml(assessment.riskLevel || 'Unknown') +
+              '</span>' +
+              '<span class="text-xs text-on-surface-variant font-medium">' + U.escapeHtml(dateStr) + '</span>' +
+            '</div>' +
+            '<p class="text-sm text-on-surface leading-relaxed">' + summaryText + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="flex items-center gap-3 mt-4 pt-3 border-t border-outline-variant/20">' +
+          '<button data-action="download" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-xs font-bold tracking-wide shadow-sm hover:bg-primary/90 active:scale-95 transition-all">' +
+            '<span class="material-symbols-outlined !text-base">download</span>' +
+            '<span>' + t('history_download') + '</span>' +
+          '</button>' +
+          '<button data-action="view" class="flex items-center gap-2 bg-surface-container-highest text-on-surface px-4 py-2 rounded-xl text-xs font-bold tracking-wide hover:bg-surface-dim active:scale-95 transition-all">' +
+            '<span class="material-symbols-outlined !text-base">visibility</span>' +
+            '<span>' + t('history_view') + '</span>' +
+          '</button>' +
+          '<button data-action="delete" class="ml-auto flex items-center gap-1 text-error hover:bg-error-container px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95">' +
+            '<span class="material-symbols-outlined !text-base">delete</span>' +
+          '</button>' +
+        '</div>' +
+        '<div data-transcript class="hidden mt-4 pt-4 border-t border-outline-variant/20 space-y-3 max-h-96 overflow-y-auto"></div>';
+
+      // Event handlers
+      card.querySelector('[data-action="download"]').onclick = function () {
+        downloadReport(assessment, profileData || assessment.patientSnapshot || {});
+      };
+
+      card.querySelector('[data-action="view"]').onclick = function () {
+        var transcriptDiv = card.querySelector('[data-transcript]');
+        if (transcriptDiv.classList.contains('hidden')) {
+          transcriptDiv.classList.remove('hidden');
+          renderTranscript(transcriptDiv, assessment.chatTranscript || []);
+          this.querySelector('span:last-child').textContent = t('close');
+        } else {
+          transcriptDiv.classList.add('hidden');
+          this.querySelector('span:last-child').textContent = t('history_view');
+        }
+      };
+
+      card.querySelector('[data-action="delete"]').onclick = async function () {
+        if (!confirm(t('history_delete_confirm'))) return;
+        try {
+          await deleteAssessment(db, profileId, assessment.id);
+          card.remove();
+          // Check if list is now empty
+          if (listContainer.children.length === 0) {
+            listContainer.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
+          }
+          U.toast(t('saved'), 'success');
+        } catch (e) {
+          console.error("Delete failed:", e);
+          U.toast(t('error_generic'), 'error');
+        }
+      };
+
+      listContainer.appendChild(card);
+    });
+  }
+
+  function renderTranscript(container, transcript) {
+    container.innerHTML = '';
+    if (!transcript || transcript.length === 0) {
+      container.innerHTML = '<p class="text-sm text-on-surface-variant italic">No transcript available.</p>';
+      return;
+    }
+
+    transcript.forEach(function (msg) {
+      var div = document.createElement('div');
+      var isAI = msg.role === 'assistant';
+      div.className = 'flex ' + (isAI ? 'justify-start' : 'justify-end');
+      var bubbleClass = isAI
+        ? 'bg-[#CFECE0] text-on-primary-container rounded-t-xl rounded-br-xl'
+        : 'bg-[#FEC0B3] text-on-secondary-container rounded-t-xl rounded-bl-xl';
+      div.innerHTML =
+        '<div class="max-w-[85%] ' + bubbleClass + ' px-4 py-3 shadow-sm">' +
+          '<p class="text-xs font-bold uppercase tracking-wider mb-1 opacity-60">' +
+            (isAI ? t('report_ai_label') : t('report_you_label')) +
+          '</p>' +
+          '<p class="text-sm leading-relaxed whitespace-pre-line">' +
+            U.escapeHtml(String(msg.content || '').replace(/\*\*/g, '')) +
+          '</p>' +
+        '</div>';
+      container.appendChild(div);
+    });
+  }
+
+  // Translate page navigation
+  window.openTranslatePage = function () {
+    var page = window.location.href.split('/').pop().split('?')[0];
+    localStorage.setItem('sahaya_translate_return', page);
+    window.location.href = 'translate.html';
+  };
+</script>
+</body>
+</html>

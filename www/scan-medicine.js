@@ -1,9 +1,11 @@
 // Sahaya medicine scanner. This page is intentionally public (no login needed)
 // and touches no user data — it only posts an image to the analysis function.
-(function () {
-    "use strict";
 
-    const U = window.SAHAYA_UTIL;
+const U = window.SAHAYA_UTIL;
+const I18N = window.SAHAYA_I18N;
+const Voice = window.SAHAYA_VOICE;
+const t = I18N ? I18N.t.bind(I18N) : (k) => k;
+const cfg = window.SAHAYA_BACKEND.medicine;
     const cfg = window.SAHAYA_BACKEND.medicine;
 
     const videoElement = document.getElementById('camera-stream');
@@ -35,13 +37,13 @@
                 video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
             });
             videoElement.srcObject = stream;
-            scanText.innerText = "Center the medicine label within the frame";
+            scanText.innerText = t('scan_instruction');
         } catch (err) {
             console.error("Camera error:", err);
             if (err && (err.name === 'NotAllowedError' || err.name === 'SecurityError')) {
-                scanText.innerText = "Camera permission denied. Allow camera access in Settings, or use Gallery.";
+                scanText.innerText = t('scan_cam_denied');
             } else {
-                scanText.innerText = "Camera not available. Please use Gallery.";
+                scanText.innerText = t('scan_cam_error');
             }
         }
     }
@@ -57,7 +59,7 @@
         // Show Scanning UI
         scanLine.classList.remove('hidden');
         scanLine.classList.add('animate-pulse');
-        scanText.innerText = "AI analyzing medicine...";
+        scanText.innerText = t('scan_analyzing');
         btnCapture.disabled = true;
 
         try {
@@ -71,7 +73,7 @@
             }, cfg.timeoutMs);
 
             if (data.error || data.identified === false) {
-                U.toast(data.error || "Could not identify the medicine. Please try a clearer photo.", 'error');
+                U.toast(data.error || t('scan_not_found'), 'error');
                 resetScanner();
                 return;
             }
@@ -80,7 +82,7 @@
 
         } catch (err) {
             console.error(err);
-            U.toast(err.message || "Failed to analyze the medicine. Please try again.", 'error');
+            U.toast(err.message || t('error_generic'), 'error');
             resetScanner();
         }
     }
@@ -111,12 +113,16 @@
 
         resultCard.classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (Voice) {
+             Voice.greet('scan_voice_greeting');
+        }
     }
 
     function resetScanner() {
         scanLine.classList.add('hidden');
         scanLine.classList.remove('animate-pulse');
-        scanText.innerText = "Center the medicine label within the frame";
+        scanText.innerText = t('scan_instruction');
         btnCapture.disabled = false;
         fileInput.value = ''; // allow re-picking the same gallery image
         resultCard.classList.add('hidden');
@@ -142,7 +148,7 @@
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             const reader = new FileReader();
-            reader.onerror = () => U.toast("Could not read that image. Please try another.", 'error');
+            reader.onerror = () => U.toast(t('error_generic'), 'error');
             reader.onload = (event) => {
                 stopCamera();
                 analyzeMedicine(event.target.result);
@@ -163,6 +169,7 @@
         }
     });
 
+    window.resetScanner = resetScanner;
+
     document.addEventListener('DOMContentLoaded', startCamera);
     window.addEventListener('pagehide', stopCamera); // don't leave the torch on
-})();

@@ -55,20 +55,20 @@ tailwind.config = {
 <button class="text-[#366759] dark:text-[#7CAE9E] hover:bg-[#CFECE0]/50 active:scale-95 duration-200 ease-in-out p-2 rounded-full flex items-center gap-1" onclick="window.history.back()">
 <span class="material-symbols-outlined">arrow_back</span>
 </button>
-<h1 class="font-headline font-bold text-xl text-[#366759] tracking-tighter">Blood Details History</h1>
+<h1 class="font-headline font-bold text-xl text-[#366759] tracking-tighter" data-i18n="blood_history_title">Blood Details History</h1>
 </div>
 </header>
 
 <main class="flex-grow flex flex-col items-center justify-start px-6 pt-6 pb-24 space-y-8 w-full max-w-lg mx-auto">
-  <div id="loading-state" class="text-center text-on-surface-variant font-medium mt-10">Loading history...</div>
-  <div id="empty-state" class="hidden text-center text-on-surface-variant font-medium mt-10">
-     No blood history found. Update blood details on your dashboard to see trends here.
+  <div id="loading-state" class="text-center text-on-surface-variant font-medium mt-10" data-i18n="loading">Loading history...</div>
+  <div id="empty-state" class="hidden text-center text-on-surface-variant font-medium mt-10" data-i18n="history_empty">
+     No blood history found.
   </div>
 
   <div id="charts-container" class="hidden w-full space-y-8">
     <!-- Blood Sugar Chart -->
     <div class="w-full bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-primary-container/20">
-       <h3 class="font-headline text-lg font-bold text-on-surface mb-4">Blood Sugar (mg/dL)</h3>
+       <h3 class="font-headline text-lg font-bold text-on-surface mb-4" data-i18n="blood_history_sugar">Blood Sugar (mg/dL)</h3>
        <div class="relative h-64 w-full">
            <canvas id="sugarChart"></canvas>
        </div>
@@ -76,7 +76,7 @@ tailwind.config = {
 
     <!-- Hemoglobin Chart -->
     <div class="w-full bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-primary-container/20">
-       <h3 class="font-headline text-lg font-bold text-on-surface mb-4">Hemoglobin (g/dL)</h3>
+       <h3 class="font-headline text-lg font-bold text-on-surface mb-4" data-i18n="blood_history_hemoglobin">Hemoglobin (g/dL)</h3>
        <div class="relative h-64 w-full">
            <canvas id="hemoglobinChart"></canvas>
        </div>
@@ -88,11 +88,11 @@ tailwind.config = {
 <button onclick="openTranslatePage()" title="Translate" aria-label="Translate this page" class="fixed top-3 z-[9999] right-6 text-[#366759] hover:bg-[#CFECE0]/50 active:scale-95 transition-all p-2 rounded-full bg-white/60 backdrop-blur-sm shadow-sm border border-white">
   <span class="material-symbols-outlined">translate</span>
 </button>
-<div id="google_translate_element" style="display:none;"></div>
 <script src="util.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app-config.js"></script>
-<script src="translate.js"></script>
+<script src="i18n.js"></script>
+<script src="voice.js"></script>
 
 <script type="module" src="blood_history.js"></script>
 </body>
