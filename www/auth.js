@@ -4,11 +4,7 @@
 //   const user = await requireAuth();          // redirects to login if signed out
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut as fbSignOut
-} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut as fbSignOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 const cfg = window.SAHAYA_FIREBASE_CONFIG;

@@ -1,5 +1,6 @@
 import { db, requireAuth } from "./auth.js";
 import { doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { logAudit, AuditAction } from "./audit.js";
 
 const U = window.SAHAYA_UTIL;
 const I18N = window.SAHAYA_I18N;
@@ -162,6 +163,7 @@ document.getElementById('weight-submit-btn').addEventListener('click', async fun
     currentProfileData.weightHistory = updatedHistory;
 
     renderWeightChart(updatedHistory);
+    logAudit(db, currentUid, AuditAction.WEIGHT_UPDATE, { profileId: profileId, weight: val });
 
     input.value = '';
     this.innerHTML = '<span class="material-symbols-outlined text-[18px] align-middle">check</span> Saved';
@@ -219,6 +221,7 @@ document.getElementById('blood-submit-btn').addEventListener('click', async func
     if(!currentProfileData) currentProfileData = {};
     if(!currentProfileData.bloodHistory) currentProfileData.bloodHistory = [];
     currentProfileData.bloodHistory.push(newRecord);
+    logAudit(db, currentUid, AuditAction.BLOOD_DETAILS_UPDATE, { profileId: profileId });
 
     this.innerHTML = '<span class="material-symbols-outlined text-sm align-middle mr-1">check</span> Details Saved';
     setTimeout(() => { this.innerHTML = 'Save Blood Details'; this.disabled = false; }, 2000);

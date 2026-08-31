@@ -172,16 +172,15 @@
                     <p class="text-on-surface-variant">Stay hydrated and maintain a balanced diet while tracking changes
                         in pain levels every 4 hours.</p>
                 </div>
-                <div
-                    class="bg-surface-container-low rounded-xl p-6 hover:bg-primary-container/20 transition-colors cursor-pointer group">
+                <a href="hospitals.html"
+                    class="bg-surface-container-low rounded-xl p-6 hover:bg-primary-container/20 transition-colors cursor-pointer group block no-underline">
                     <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm">
                         <span class="material-symbols-outlined text-primary"
                             data-icon="local_hospital">local_hospital</span>
                     </div>
-                    <h4 class="font-bold text-xl mb-2">Nearby Facilities</h4>
-                    <p class="text-on-surface-variant">There are 3 primary health centers within 5km that can provide
-                        immediate physical examination.</p>
-                </div>
+                    <h4 class="font-bold text-xl mb-2 text-on-surface">Nearby Hospitals</h4>
+                    <p class="text-on-surface-variant">Find hospitals near you and book an appointment based on your assessment.</p>
+                </a>
             </div>
             <!-- Disclaimer -->
             <div class="bg-surface-container-highest rounded-xl p-6 text-center">
@@ -232,7 +231,7 @@
             const doctorBtn = document.getElementById('talk-to-doctor-btn');
             if (doctorBtn) {
                 doctorBtn.addEventListener('click', () => {
-                    U.toast(t('result_doctor_soon'), 'info', 5000);
+                    window.location.href = 'hospitals.html';
                 });
             }
 

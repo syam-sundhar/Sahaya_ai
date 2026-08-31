@@ -1,0 +1,46 @@
+rules_version = '2';
+
+// ── Sahaya Firebase Storage Security Rules ───────────────────────────────────
+// Paste this into: Firebase Console → Storage → Rules → Edit Rules → Publish
+//
+// These rules ensure:
+// 1. Users can only upload and read photos in their own user directory (photos/userId/*)
+// 2. Uploaded files must be images
+// 3. Uploaded files cannot exceed 5MB
+// 4. No public access to unauthenticated users
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ── Helper functions ─────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    function isUnderSizeLimit() {
+      // 5MB max
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // ── Profile Photos ───────────────────────────────────────────────────────
+    match /photos/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+                   && isImage()
+                   && isUnderSizeLimit();
+    }
+
+    // ── Default deny ─────────────────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

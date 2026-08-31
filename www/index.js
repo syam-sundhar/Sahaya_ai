@@ -1,5 +1,6 @@
 import { auth, db, requireAuth, logout } from "./auth.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { logAudit, AuditAction } from "./audit.js";
 
 const U = window.SAHAYA_UTIL;
 const I18N = window.SAHAYA_I18N;
@@ -18,6 +19,12 @@ if (logoutBtn) {
 (async () => {
   const user = await requireAuth(); // redirects to login.html when signed out
   if (!user) return;
+  
+  // Log login event only once per session
+  if (!sessionStorage.getItem('sahaya_audit_login')) {
+      logAudit(db, user.uid, AuditAction.LOGIN);
+      sessionStorage.setItem('sahaya_audit_login', 'true');
+  }
 
   const profilesContainer = document.getElementById('profiles-container');
   if (!profilesContainer) return;

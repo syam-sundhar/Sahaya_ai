@@ -10,6 +10,19 @@ import {
   query, orderBy, limit as firestoreLimit, Timestamp
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
+/** App version — bump on each release. */
+const APP_VERSION = '1.1.0';
+
+/** Generate a v4-style UUID for encounter correlation. */
+function generateUUID() {
+  if (crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0;
+    var v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 /**
  * Save a completed assessment with full chat transcript to Firestore.
  *
@@ -31,9 +44,14 @@ import {
 export async function saveAssessment(db, userId, profileId, data) {
   var assessRef = collection(db, "profiles", profileId, "assessments");
 
+  var now = Timestamp.now();
   var docData = {
     userId: userId,
-    createdAt: Timestamp.now(),
+    encounterId: generateUUID(),
+    source: 'patient_app',
+    appVersion: APP_VERSION,
+    createdAt: now,
+    updatedAt: now,
     language: data.language || 'en',
     riskLevel: data.riskLevel || 'Unknown',
     summary: data.summary || '',

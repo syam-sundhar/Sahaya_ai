@@ -1,0 +1,4 @@
+hospital data API: 579b464db66ec23bdd00000121c3581039534ddd52362357a3a36f1a
+
+
+i think this is base url: https://api.data.gov.in/resource/98fa254e-c5f8-4910-a19b-4828939b477d?api-key=XXXXXX&format=json&limit=50

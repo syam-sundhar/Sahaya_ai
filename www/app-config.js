@@ -22,5 +22,14 @@ window.SAHAYA_BACKEND = {
   google: {
     // Replace with your Google Cloud API key to enable high-quality voices for all languages
     ttsApiKey: "" 
+  },
+  // Government Hospital Directory API
+  // SECURITY NOTE: For production, proxy this through a Supabase Edge Function
+  // so the API key is never exposed in the client bundle.
+  hospital: {
+    baseUrl: "https://api.data.gov.in/resource/98fa254e-c5f8-4910-a19b-4828939b477d",
+    apiKey: "579b464db66ec23bdd00000121c3581039534ddd52362357a3a36f1a",
+    defaultLimit: 500,
+    timeoutMs: 15000
   }
 };

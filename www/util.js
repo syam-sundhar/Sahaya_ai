@@ -4,6 +4,41 @@
 (function () {
   "use strict";
 
+  // ── Online/offline state ───────────────────────────────────────────────────
+  function isOnline() { return navigator.onLine !== false; }
+
+  var _offlineBanner = null;
+  function showOfflineBanner() {
+    if (_offlineBanner) return;
+    _offlineBanner = document.createElement('div');
+    _offlineBanner.id = 'sahaya-offline-banner';
+    _offlineBanner.setAttribute('role', 'alert');
+    _offlineBanner.style.cssText =
+      'position:fixed;top:0;left:0;right:0;z-index:99999;' +
+      'background:#B3261E;color:#fff;text-align:center;' +
+      'padding:8px 16px;font-family:Inter,sans-serif;font-size:13px;font-weight:600;' +
+      'letter-spacing:0.5px;box-shadow:0 2px 12px rgba(0,0,0,0.3);';
+    _offlineBanner.textContent = '⚠ You are offline. Changes will sync when connection returns.';
+    document.body.appendChild(_offlineBanner);
+  }
+
+  function hideOfflineBanner() {
+    if (_offlineBanner) {
+      _offlineBanner.remove();
+      _offlineBanner = null;
+    }
+  }
+
+  // Listen for online/offline events
+  window.addEventListener('online', hideOfflineBanner);
+  window.addEventListener('offline', showOfflineBanner);
+  // Check on load
+  if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', function () {
+      if (!isOnline()) showOfflineBanner();
+    });
+  }
+
   /** Escape a string for safe interpolation into innerHTML/template literals. */
   function escapeHtml(value) {
     return String(value == null ? "" : value)
@@ -68,6 +103,32 @@
     } catch (err) {
       throw new Error("Unexpected server response. Please try again later.");
     }
+  }
+
+  /**
+   * Retry a fetch call with exponential backoff.
+   * @param {Function} fn - async function that performs the fetch
+   * @param {number} maxRetries - max number of retry attempts (default 3)
+   * @param {number} baseDelayMs - initial delay in ms (default 1000)
+   * @returns {Promise} - resolves with fn's result
+   */
+  async function retryFetch(fn, maxRetries, baseDelayMs) {
+    var retries = maxRetries || 3;
+    var delay = baseDelayMs || 1000;
+    var lastError;
+    for (var attempt = 0; attempt <= retries; attempt++) {
+      try {
+        return await fn();
+      } catch (err) {
+        lastError = err;
+        if (attempt < retries) {
+          var jitter = Math.random() * delay * 0.3;
+          await new Promise(function (r) { setTimeout(r, delay + jitter); });
+          delay *= 2; // exponential backoff
+        }
+      }
+    }
+    throw lastError;
   }
 
   // ── Scoped storage: never share health data across users/profiles ─────────
@@ -150,12 +211,44 @@
     return el;
   }
 
+  /**
+   * Simple client-side rate limiter.
+   * @param {number} maxRequests - Max requests allowed in the window
+   * @param {number} windowMs - Time window in milliseconds
+   */
+  function RateLimiter(maxRequests, windowMs) {
+    this.maxRequests = maxRequests || 10;
+    this.windowMs = windowMs || 60000;
+    this.timestamps = [];
+  }
+
+  RateLimiter.prototype.check = function () {
+    var now = Date.now();
+    // Remove expired timestamps
+    this.timestamps = this.timestamps.filter(function (ts) { return now - ts < this.windowMs; }.bind(this));
+    if (this.timestamps.length >= this.maxRequests) {
+      return false; // rate limited
+    }
+    this.timestamps.push(now);
+    return true; // allowed
+  };
+
+  RateLimiter.prototype.getWaitSeconds = function () {
+    if (this.timestamps.length === 0) return 0;
+    var oldest = this.timestamps[0];
+    var remaining = this.windowMs - (Date.now() - oldest);
+    return Math.max(0, Math.ceil(remaining / 1000));
+  };
+
   window.SAHAYA_UTIL = {
     escapeHtml: escapeHtml,
     avatarDataUrl: avatarDataUrl,
     profilePhoto: profilePhoto,
     fetchJson: fetchJson,
     fetchWithTimeout: fetchWithTimeout,
+    retryFetch: retryFetch,
+    isOnline: isOnline,
+    RateLimiter: RateLimiter,
     scopeKey: scopeKey,
     scopedSetItem: scopedSetItem,
     scopedGetItem: scopedGetItem,

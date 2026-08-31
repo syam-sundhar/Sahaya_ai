@@ -1,5 +1,6 @@
 import { db, requireAuth } from "./auth.js";
 import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { logAudit, AuditAction } from "./audit.js";
 
 const U = window.SAHAYA_UTIL;
 const I18N = window.SAHAYA_I18N;
@@ -97,14 +98,20 @@ if (addProfileForm) {
     submitBtn.disabled = true;
 
     try {
-      await addDoc(collection(db, "profiles"), {
+      var langCode = 'en';
+      try { langCode = localStorage.getItem('sahaya_lang') || 'en'; } catch(e) {}
+
+      var docRef = await addDoc(collection(db, "profiles"), {
         userId: currentUser.uid,
         name: name,
         age: age,
         gender: gender,
         photo: photoDataUrl,
-        createdAt: new Date().toISOString()
+        preferredLanguage: langCode,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       });
+      logAudit(db, currentUser.uid, AuditAction.PROFILE_CREATE, { profileId: docRef.id, name: name });
       window.location.href = 'index.html';
     } catch (error) {
       console.error("Error adding document: ", error);

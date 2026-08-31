@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SAHAYA - Nearby Hospitals</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#fff8f7",
+                        "on-surface-variant": "#404945",
+                        "on-tertiary-container": "#014142",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#79adad",
+                        "on-tertiary-fixed-variant": "#164e4f",
+                        "on-primary-fixed": "#002019",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#326667",
+                        "tertiary-fixed-dim": "#9bd0d0",
+                        "on-primary-container": "#0c4236",
+                        "surface-container-highest": "#ece0de",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#fbeeec",
+                        "secondary-container": "#fec0b3",
+                        "tertiary-fixed": "#b7ecec",
+                        "on-background": "#201a19",
+                        "inverse-surface": "#362f2e",
+                        "secondary": "#815248",
+                        "secondary-fixed": "#ffdad3",
+                        "surface-variant": "#ece0de",
+                        "on-surface": "#201a19",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#e4d7d5",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#366759",
+                        "surface": "#fff8f7",
+                        "on-primary-fixed-variant": "#1d4f42",
+                        "on-secondary-container": "#7a4c42",
+                        "outline": "#707975",
+                        "inverse-primary": "#9ed1c0",
+                        "surface-bright": "#fff8f7",
+                        "on-secondary-fixed-variant": "#663b32",
+                        "on-secondary-fixed": "#32110b",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#f2e5e3",
+                        "on-tertiary-fixed": "#002020",
+                        "surface-container-low": "#fef1ef",
+                        "primary-fixed-dim": "#9ed1c0",
+                        "outline-variant": "#c0c8c4",
+                        "primary-fixed": "#b9eddc",
+                        "secondary-fixed-dim": "#f5b8ab",
+                        "primary": "#366759",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#7cae9e",
+                        "surface-container": "#f8ebe9"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .bg-mesh {
+            background-color: #f8ebe9;
+            background-image:
+                radial-gradient(at 0% 0%, #cfece0 0px, transparent 50%),
+                radial-gradient(at 100% 0%, #fec0b3 0px, transparent 50%);
+        }
+
+        body {
+            min-height: 100dvh;
+        }
+
+        /* Skeleton loader animation */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #ece0de 25%, #f2e5e3 50%, #ece0de 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+            border-radius: 8px;
+        }
+
+        /* Slide-up modal */
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-panel {
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.hidden .modal-panel {
+            transform: translateY(100%);
+        }
+    </style>
+<link rel="icon" type="image/png" href="logo.png"><link rel="manifest" href="manifest.json"></head>
+
+<body
+    class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+    <!-- Top Navigation -->
+    <header
+        class="bg-[#F8EBE9]/80 backdrop-blur-md flex justify-between items-center px-6 py-4 w-full fixed top-0 z-50">
+        <div class="flex items-center gap-4">
+            <a id="hospitals-back-link" aria-label="Back to results"
+                class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors"
+                href="results.html">
+                <span class="material-symbols-outlined text-primary" data-icon="arrow_back">arrow_back</span>
+            </a>
+            <h1 class="font-headline font-extrabold text-primary tracking-tight text-xl">Nearby Hospitals</h1>
+        </div>
+    </header>
+
+    <main class="min-h-screen pt-20 pb-8 px-4 md:px-8 bg-mesh">
+        <div class="max-w-4xl mx-auto space-y-4">
+
+            <!-- State Selector Bar -->
+            <div class="flex items-center gap-3 bg-surface-container-lowest rounded-xl p-3 shadow-sm">
+                <span class="material-symbols-outlined text-primary">location_on</span>
+                <div class="flex-1">
+                    <p id="detected-location" class="text-xs text-on-surface-variant font-medium">Detecting your location...</p>
+                    <select id="state-selector" class="w-full bg-transparent border-none text-on-surface font-bold text-sm focus:ring-0 p-0 mt-0.5 cursor-pointer" disabled>
+                        <option value="">Auto-detect from GPS</option>
+                    </select>
+                </div>
+                <button id="refresh-btn" class="p-2 rounded-full hover:bg-primary/10 transition-colors" aria-label="Refresh">
+                    <span class="material-symbols-outlined text-primary text-xl">refresh</span>
+                </button>
+            </div>
+
+            <!-- Loading Skeletons -->
+            <div id="loading-state" class="space-y-4">
+                <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm">
+                    <div class="skeleton h-5 w-3/4 mb-3"></div>
+                    <div class="skeleton h-4 w-1/2 mb-2"></div>
+                    <div class="skeleton h-4 w-1/3"></div>
+                </div>
+                <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm">
+                    <div class="skeleton h-5 w-2/3 mb-3"></div>
+                    <div class="skeleton h-4 w-1/2 mb-2"></div>
+                    <div class="skeleton h-4 w-1/4"></div>
+                </div>
+                <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm">
+                    <div class="skeleton h-5 w-3/5 mb-3"></div>
+                    <div class="skeleton h-4 w-1/2 mb-2"></div>
+                    <div class="skeleton h-4 w-2/5"></div>
+                </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-state" class="hidden bg-surface-container-lowest rounded-xl p-8 text-center shadow-sm">
+                <span class="material-symbols-outlined text-error !text-5xl mb-4 block">location_off</span>
+                <h3 id="error-title" class="font-headline font-bold text-xl text-on-surface mb-2">Could not get your location</h3>
+                <p id="error-message" class="text-on-surface-variant text-sm mb-6">Please enable GPS in your device settings and try again.</p>
+                <button id="retry-btn" class="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm active:scale-95 transition-transform">
+                    Try Again
+                </button>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden bg-surface-container-lowest rounded-xl p-8 text-center shadow-sm">
+                <span class="material-symbols-outlined text-outline !text-5xl mb-4 block">domain_disabled</span>
+                <h3 class="font-headline font-bold text-xl text-on-surface mb-2">No Hospitals Found</h3>
+                <p class="text-on-surface-variant text-sm">Try selecting a different state from the dropdown above.</p>
+            </div>
+
+            <!-- Hospital List -->
+            <div id="hospital-list" class="hidden space-y-3">
+                <!-- Cards will be injected here -->
+            </div>
+
+            <!-- Results count -->
+            <p id="results-count" class="hidden text-center text-xs text-on-surface-variant font-medium py-2"></p>
+        </div>
+    </main>
+
+    <!-- Hospital Detail Modal -->
+    <div id="detail-modal" class="modal-overlay hidden fixed inset-0 z-[60] bg-black/40 flex items-end justify-center">
+        <div class="modal-panel bg-surface-container-lowest w-full max-w-lg rounded-t-3xl max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-surface-container-lowest z-10 px-6 pt-5 pb-3 border-b border-outline-variant/20">
+                <div class="w-12 h-1 bg-outline-variant/40 rounded-full mx-auto mb-4"></div>
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h2 id="modal-name" class="font-headline font-bold text-xl text-primary"></h2>
+                        <p id="modal-care-type" class="text-xs text-on-surface-variant font-medium mt-1"></p>
+                    </div>
+                    <button id="modal-close" class="p-2 rounded-full hover:bg-primary/10 -mt-1" aria-label="Close">
+                        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="px-6 py-5 space-y-5">
+                <!-- Distance & Location -->
+                <div class="flex items-center gap-3 bg-primary-container/10 rounded-xl p-4">
+                    <span class="material-symbols-outlined text-primary">near_me</span>
+                    <div>
+                        <p id="modal-distance" class="text-sm font-bold text-primary"></p>
+                        <p id="modal-address" class="text-xs text-on-surface-variant mt-0.5"></p>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div id="modal-contact-section" class="space-y-2">
+                    <h4 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Contact</h4>
+                    <div id="modal-contacts" class="space-y-2"></div>
+                </div>
+
+                <!-- Hospital Details Grid -->
+                <div id="modal-details-grid" class="grid grid-cols-2 gap-3">
+                    <!-- Dynamic detail chips -->
+                </div>
+
+                <!-- Specialties -->
+                <div id="modal-specialties-section" class="hidden">
+                    <h4 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Specialties</h4>
+                    <p id="modal-specialties" class="text-sm text-on-surface"></p>
+                </div>
+
+                <!-- Get Directions -->
+                <a id="modal-directions-link" target="_blank" rel="noopener"
+                   class="flex items-center justify-center gap-2 bg-gradient-to-r from-[#366759] to-[#7CAE9E] text-white px-6 py-3.5 rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-all w-full">
+                    <span class="material-symbols-outlined">directions</span>
+                    Get Directions
+                </a>
+
+                <!-- Divider -->
+                <hr class="border-outline-variant/20" />
+
+                <!-- Appointment Form -->
+                <div class="space-y-4">
+                    <h3 class="font-headline font-bold text-lg text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">calendar_month</span>
+                        Book Appointment
+                    </h3>
+
+                    <!-- Auto-filled Patient Info (read-only) -->
+                    <div class="bg-surface-container-low rounded-xl p-4 space-y-3">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Patient Details (from profile)</p>
+                        <div class="grid grid-cols-3 gap-2 text-sm">
+                            <div>
+                                <span class="text-[10px] text-on-surface-variant block">Name</span>
+                                <span id="appt-patient-name" class="font-bold text-on-surface">—</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-on-surface-variant block">Age</span>
+                                <span id="appt-patient-age" class="font-bold text-on-surface">—</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-on-surface-variant block">Gender</span>
+                                <span id="appt-patient-gender" class="font-bold text-on-surface">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem Summary (auto-filled from assessment) -->
+                    <div>
+                        <label class="text-xs font-bold text-on-surface-variant block mb-1">Problem / Symptoms</label>
+                        <textarea id="appt-problem" rows="3"
+                                  class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+                                  placeholder="Your symptoms will be auto-filled from your assessment..."></textarea>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs font-bold text-on-surface-variant block mb-1">Preferred Date</label>
+                            <input id="appt-date" type="date"
+                                   class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-on-surface-variant block mb-1">Preferred Time</label>
+                            <input id="appt-time" type="time"
+                                   class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <button id="appt-submit-btn"
+                            class="w-full bg-gradient-to-r from-[#815248] to-[#FEC0B3] text-white px-6 py-4 rounded-xl font-headline font-bold text-base shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">event_available</span>
+                        <span id="appt-submit-label">Submit Appointment</span>
+                    </button>
+                </div>
+
+                <!-- Call Hospital -->
+                <a id="modal-call-link" href="#"
+                   class="hidden flex items-center justify-center gap-2 bg-surface-container-low text-primary border border-primary/30 px-6 py-3 rounded-xl font-bold text-sm active:scale-95 transition-all w-full">
+                    <span class="material-symbols-outlined">call</span>
+                    <span id="modal-call-text">Call Hospital</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="util.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="app-config.js"></script>
+    <script src="i18n.js"></script>
+    <script src="voice.js"></script>
+
+    <script type="module">
+        import { db, requireAuth } from "./auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { searchNearbyHospitals, INDIAN_STATES, formatDistance, getBestPhone, getDirectionsUrl, getUserLocation, detectState, fetchHospitals, haversineKm } from "./hospital-service.js";
+        import { saveAppointment } from "./appointment-store.js";
+        import { logAudit, AuditAction } from "./audit.js";
+
+        const U = window.SAHAYA_UTIL;
+        const I18N = window.SAHAYA_I18N;
+        const t = I18N ? I18N.t.bind(I18N) : (k) => k;
+
+        // ── DOM Elements ─────────────────────────────────────────────────────
+        const loadingState = document.getElementById('loading-state');
+        const errorState = document.getElementById('error-state');
+        const emptyState = document.getElementById('empty-state');
+        const hospitalList = document.getElementById('hospital-list');
+        const resultsCount = document.getElementById('results-count');
+        const stateSelector = document.getElementById('state-selector');
+        const detectedLocation = document.getElementById('detected-location');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const retryBtn = document.getElementById('retry-btn');
+
+        // Modal elements
+        const detailModal = document.getElementById('detail-modal');
+        const modalClose = document.getElementById('modal-close');
+
+        // ── State ────────────────────────────────────────────────────────────
+        let currentHospitals = [];
+        let currentUser = null;
+        let profileData = null;
+        let assessmentSummary = '';
+        let assessmentRiskLevel = '';
+        let userLat = 0, userLon = 0;
+
+        // ── Init ─────────────────────────────────────────────────────────────
+        (async function init() {
+            currentUser = await requireAuth();
+            if (!currentUser) return;
+
+            // Load profile data
+            const profileId = sessionStorage.getItem('currentProfileId') || '-';
+            try {
+                const snap = await getDoc(doc(db, "profiles", profileId));
+                if (snap.exists() && snap.data().userId === currentUser.uid) {
+                    profileData = snap.data();
+                }
+            } catch (e) { console.warn("Could not load profile:", e); }
+
+            // Load assessment summary from sessionStorage (set by check-symptoms)
+            try {
+                var resultStr = U.scopedGetItem('sahaya_result', currentUser.uid, profileId);
+                if (resultStr) {
+                    var result = JSON.parse(resultStr);
+                    assessmentSummary = result.summary || '';
+                    assessmentRiskLevel = result.riskLevel || '';
+                }
+            } catch (e) { /* non-critical */ }
+
+            // Populate state selector
+            populateStateSelector();
+
+            // Start search
+            performSearch();
+        })();
+
+        // ── Populate State Dropdown ──────────────────────────────────────────
+        function populateStateSelector() {
+            INDIAN_STATES.forEach(function (state) {
+                var opt = document.createElement('option');
+                opt.value = state;
+                opt.textContent = state;
+                stateSelector.appendChild(opt);
+            });
+            stateSelector.disabled = false;
+
+            stateSelector.addEventListener('change', function () {
+                performSearch(stateSelector.value || null);
+            });
+        }
+
+        // ── Search ───────────────────────────────────────────────────────────
+        async function performSearch(overrideState) {
+            showLoading();
+
+            try {
+                var loc = await getUserLocation();
+                userLat = loc.lat;
+                userLon = loc.lon;
+
+                var state = overrideState || detectState(loc.lat, loc.lon);
+
+                if (state && !overrideState) {
+                    stateSelector.value = state;
+                    detectedLocation.textContent = "📍 Detected: " + state;
+                } else if (overrideState) {
+                    detectedLocation.textContent = "📍 Selected: " + overrideState;
+                    state = overrideState;
+                }
+
+                var hospitals = await fetchHospitals(state, 500);
+
+                // Compute distances
+                for (var i = 0; i < hospitals.length; i++) {
+                    hospitals[i].distanceKm = haversineKm(userLat, userLon, hospitals[i].lat, hospitals[i].lon);
+                }
+
+                // Sort by distance
+                hospitals.sort(function (a, b) { return a.distanceKm - b.distanceKm; });
+
+                currentHospitals = hospitals.slice(0, 15);
+
+                if (currentHospitals.length === 0) {
+                    showEmpty();
+                } else {
+                    renderHospitalList(currentHospitals);
+                    resultsCount.textContent = "Showing " + currentHospitals.length + " nearest hospitals out of " + hospitals.length + " in " + (state || "India");
+                    resultsCount.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Hospital search failed:", err);
+                showError(err.message);
+            }
+        }
+
+        // ── UI State Helpers ─────────────────────────────────────────────────
+        function showLoading() {
+            loadingState.classList.remove('hidden');
+            errorState.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            hospitalList.classList.add('hidden');
+            resultsCount.classList.add('hidden');
+        }
+
+        function showError(message) {
+            loadingState.classList.add('hidden');
+            errorState.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            hospitalList.classList.add('hidden');
+            resultsCount.classList.add('hidden');
+            document.getElementById('error-message').textContent = message || "An error occurred.";
+        }
+
+        function showEmpty() {
+            loadingState.classList.add('hidden');
+            errorState.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            hospitalList.classList.add('hidden');
+            resultsCount.classList.add('hidden');
+        }
+
+        // ── Render Hospital Cards ────────────────────────────────────────────
+        function renderHospitalList(hospitals) {
+            loadingState.classList.add('hidden');
+            hospitalList.innerHTML = '';
+            hospitalList.classList.remove('hidden');
+
+            hospitals.forEach(function (h, index) {
+                var phone = getBestPhone(h);
+                var hasEmergency = h.emergencyServices && h.emergencyServices !== "0";
+
+                var card = document.createElement('div');
+                card.className = "bg-surface-container-lowest rounded-xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer active:scale-[0.98] border border-transparent hover:border-primary/10";
+                card.setAttribute('role', 'button');
+                card.tabIndex = 0;
+
+                card.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-primary-container/20 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-primary">local_hospital</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-base text-on-surface leading-tight truncate">${U.escapeHtml(h.name)}</h3>
+                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                                    <span class="material-symbols-outlined !text-xs">near_me</span>
+                                    ${U.escapeHtml(formatDistance(h.distanceKm))}
+                                </span>
+                                ${h.careType && h.careType !== "0" ?
+                                    `<span class="text-xs text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded-md">${U.escapeHtml(h.careType)}</span>` : ''}
+                                ${hasEmergency ?
+                                    `<span class="text-xs font-semibold text-[#366759] bg-[#CFECE0] px-2 py-0.5 rounded-md">🚑 Emergency</span>` : ''}
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-1.5 truncate">${U.escapeHtml(h.district)}${h.district && h.state ? ', ' : ''}${U.escapeHtml(h.state)}</p>
+                        </div>
+                        <span class="material-symbols-outlined text-outline-variant self-center">chevron_right</span>
+                    </div>
+                `;
+
+                card.addEventListener('click', function () { openDetailModal(h); });
+                card.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetailModal(h); }
+                });
+
+                hospitalList.appendChild(card);
+            });
+        }
+
+        // ── Detail Modal ─────────────────────────────────────────────────────
+        function openDetailModal(hospital) {
+            var h = hospital;
+
+            // Header
+            document.getElementById('modal-name').textContent = h.name;
+            document.getElementById('modal-care-type').textContent =
+                [h.careType, h.medicineType].filter(function (v) { return v && v !== "0"; }).join(' • ') || 'Healthcare Facility';
+
+            // Distance & Address
+            document.getElementById('modal-distance').textContent = formatDistance(h.distanceKm) + " away";
+            var addressParts = [h.address, h.district, h.state, h.pincode].filter(function (v) { return v && v !== "0"; });
+            document.getElementById('modal-address').textContent = addressParts.join(', ') || 'Address not available';
+
+            // Contacts
+            var contactsEl = document.getElementById('modal-contacts');
+            contactsEl.innerHTML = '';
+            var phones = [
+                { label: 'Telephone', num: h.telephone },
+                { label: 'Mobile', num: h.mobile },
+                { label: 'Emergency', num: h.emergencyNum },
+                { label: 'Ambulance', num: h.ambulanceNum }
+            ];
+            phones.forEach(function (p) {
+                if (p.num && p.num !== "0" && p.num.trim().length > 3) {
+                    var div = document.createElement('a');
+                    div.href = "tel:" + p.num.trim();
+                    div.className = "flex items-center gap-3 bg-surface-container-low rounded-lg p-3 hover:bg-primary/5 transition-colors";
+                    div.innerHTML = `<span class="material-symbols-outlined text-primary !text-lg">call</span>
+                        <div class="flex-1"><span class="text-[10px] text-on-surface-variant block">${U.escapeHtml(p.label)}</span>
+                        <span class="text-sm font-bold text-on-surface">${U.escapeHtml(p.num)}</span></div>`;
+                    contactsEl.appendChild(div);
+                }
+            });
+
+            if (contactsEl.children.length === 0) {
+                contactsEl.innerHTML = '<p class="text-xs text-on-surface-variant italic">No contact information available</p>';
+            }
+
+            // Details Grid
+            var grid = document.getElementById('modal-details-grid');
+            grid.innerHTML = '';
+            var details = [
+                { icon: 'bed', label: 'Beds', value: h.totalBeds },
+                { icon: 'stethoscope', label: 'Doctors', value: h.numDoctors },
+                { icon: 'calendar_today', label: 'Established', value: h.establishedYear },
+                { icon: 'emergency', label: 'Emergency', value: h.emergencyServices && h.emergencyServices !== "0" ? "Available" : "—" }
+            ];
+            details.forEach(function (d) {
+                if (d.value && d.value !== "0") {
+                    var chip = document.createElement('div');
+                    chip.className = "bg-surface-container-low rounded-lg p-3 text-center";
+                    chip.innerHTML = `<span class="material-symbols-outlined text-primary !text-lg block mx-auto mb-1">${d.icon}</span>
+                        <span class="text-[10px] text-on-surface-variant block">${d.label}</span>
+                        <span class="text-sm font-bold text-on-surface">${U.escapeHtml(String(d.value))}</span>`;
+                    grid.appendChild(chip);
+                }
+            });
+
+            // Specialties
+            var specSection = document.getElementById('modal-specialties-section');
+            var specText = document.getElementById('modal-specialties');
+            if (h.specialties && h.specialties !== "0") {
+                specSection.classList.remove('hidden');
+                specText.textContent = h.specialties;
+            } else {
+                specSection.classList.add('hidden');
+            }
+
+            // Directions link
+            document.getElementById('modal-directions-link').href = getDirectionsUrl(h.lat, h.lon);
+
+            // Call link
+            var bestPhone = getBestPhone(h);
+            var callLink = document.getElementById('modal-call-link');
+            if (bestPhone) {
+                callLink.href = "tel:" + bestPhone;
+                document.getElementById('modal-call-text').textContent = "Call " + bestPhone;
+                callLink.classList.remove('hidden');
+                callLink.style.display = 'flex';
+            } else {
+                callLink.classList.add('hidden');
+                callLink.style.display = 'none';
+            }
+
+            // ── Appointment Form Auto-fill ───────────────────────────────────
+            document.getElementById('appt-patient-name').textContent = profileData ? (profileData.name || '—') : '—';
+            document.getElementById('appt-patient-age').textContent = profileData ? (profileData.age || '—') : '—';
+            document.getElementById('appt-patient-gender').textContent = profileData ? (profileData.gender || '—') : '—';
+
+            // Auto-fill problem from assessment
+            var problemField = document.getElementById('appt-problem');
+            problemField.value = assessmentSummary || '';
+
+            // Set min date to today
+            var dateField = document.getElementById('appt-date');
+            var today = new Date().toISOString().split('T')[0];
+            dateField.min = today;
+            dateField.value = '';
+
+            var timeField = document.getElementById('appt-time');
+            timeField.value = '';
+
+            // Reset submit button
+            var submitBtn = document.getElementById('appt-submit-btn');
+            var submitLabel = document.getElementById('appt-submit-label');
+            submitBtn.disabled = false;
+            submitLabel.textContent = 'Submit Appointment';
+
+            // Store current hospital for submit handler
+            submitBtn.onclick = async function () {
+                var date = dateField.value;
+                var time = timeField.value;
+
+                if (!date) {
+                    U.toast("Please select a preferred date.", "info");
+                    dateField.focus();
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitLabel.textContent = 'Submitting...';
+
+                try {
+                    var profileId = sessionStorage.getItem('currentProfileId') || '-';
+                    await saveAppointment(db, currentUser.uid, profileId, {
+                        hospitalId: String(h.id),
+                        hospitalName: h.name,
+                        hospitalPhone: bestPhone,
+                        hospitalAddress: [h.address, h.district, h.state, h.pincode].filter(function (v) { return v && v !== "0"; }).join(', '),
+                        hospitalLat: h.lat,
+                        hospitalLon: h.lon,
+                        hospitalState: h.state,
+                        hospitalDistrict: h.district,
+                        patientName: profileData ? profileData.name : '',
+                        patientAge: profileData ? profileData.age : '',
+                        patientGender: profileData ? profileData.gender : '',
+                        problemSummary: problemField.value,
+                        riskLevel: assessmentRiskLevel,
+                        preferredDate: date,
+                        preferredTime: time || ''
+                    });
+
+                    submitLabel.textContent = '✓ Appointment Saved!';
+                    submitBtn.classList.remove('from-[#815248]', 'to-[#FEC0B3]');
+                    submitBtn.classList.add('from-[#366759]', 'to-[#7CAE9E]');
+                    U.toast("Appointment booked successfully!", "success");
+
+                    setTimeout(function () {
+                        closeDetailModal();
+                    }, 2000);
+                } catch (err) {
+                    console.error("Failed to save appointment:", err);
+                    U.toast("Could not save appointment. Please try again.", "error");
+                    submitBtn.disabled = false;
+                    submitLabel.textContent = 'Submit Appointment';
+                }
+            };
+
+            // Show modal
+            detailModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetailModal() {
+            detailModal.classList.add('hidden');
+            document.body.style.overflow = '';
+            // Reset button styles
+            var submitBtn = document.getElementById('appt-submit-btn');
+            submitBtn.classList.remove('from-[#366759]', 'to-[#7CAE9E]');
+            submitBtn.classList.add('from-[#815248]', 'to-[#FEC0B3]');
+        }
+
+        // Close modal on overlay click or close button
+        modalClose.addEventListener('click', closeDetailModal);
+        detailModal.addEventListener('click', function (e) {
+            if (e.target === detailModal) closeDetailModal();
+        });
+
+        // ── Event Listeners ──────────────────────────────────────────────────
+        refreshBtn.addEventListener('click', function () {
+            performSearch(stateSelector.value || null);
+        });
+        retryBtn.addEventListener('click', function () {
+            performSearch(stateSelector.value || null);
+        });
+    </script>
+</body>
+
+</html>

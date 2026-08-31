@@ -6,7 +6,7 @@ const I18N = window.SAHAYA_I18N;
 const Voice = window.SAHAYA_VOICE;
 const t = I18N ? I18N.t.bind(I18N) : (k) => k;
 const cfg = window.SAHAYA_BACKEND.medicine;
-    const cfg = window.SAHAYA_BACKEND.medicine;
+const scanRateLimiter = new U.RateLimiter(5, 60000); // max 5 scans per minute
 
     const videoElement = document.getElementById('camera-stream');
     const canvasElement = document.getElementById('scan-canvas');
@@ -56,6 +56,12 @@ const cfg = window.SAHAYA_BACKEND.medicine;
     }
 
     async function analyzeMedicine(base64Image) {
+        if (!scanRateLimiter.check()) {
+            var waitSec = scanRateLimiter.getWaitSeconds();
+            U.toast('Please wait ' + waitSec + ' seconds before scanning again.', 'info');
+            return;
+        }
+
         // Show Scanning UI
         scanLine.classList.remove('hidden');
         scanLine.classList.add('animate-pulse');

@@ -1,0 +1,101 @@
+rules_version = '2';
+
+// ── Sahaya Firestore Security Rules ──────────────────────────────────────────
+// Paste this into: Firebase Console → Firestore → Rules → Edit Rules → Publish
+//
+// These rules ensure:
+// 1. Users can only read/write profiles they own (userId == auth.uid)
+// 2. Sub-collections (assessments, etc.) inherit parent profile ownership
+// 3. Audit events are write-only (no reads by users)
+// 4. No public/unauthenticated access to any data
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ─────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ── Profiles collection ──────────────────────────────────────────────────
+    // Users can only CRUD profiles where userId matches their auth UID.
+    match /profiles/{profileId} {
+
+      // Allow read only if the profile belongs to the authenticated user
+      allow read: if isAuthenticated()
+                  && resource.data.userId == request.auth.uid;
+
+      // Allow create only if the userId field matches the authenticated user
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 100;
+
+      // Allow update only if the profile belongs to the user
+      // and they are not changing the userId field
+      allow update: if isAuthenticated()
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.userId == request.auth.uid;
+
+      // Allow delete only if the profile belongs to the user
+      allow delete: if isAuthenticated()
+                    && resource.data.userId == request.auth.uid;
+
+      // ── Assessments sub-collection ─────────────────────────────────────
+      // Inherits ownership from parent profile.
+      match /assessments/{assessmentId} {
+
+        allow read: if isAuthenticated()
+                    && get(/databases/$(database)/documents/profiles/$(profileId)).data.userId == request.auth.uid;
+
+        allow create: if isAuthenticated()
+                      && request.resource.data.userId == request.auth.uid;
+
+        allow update: if isAuthenticated()
+                      && resource.data.userId == request.auth.uid
+                      && request.resource.data.userId == request.auth.uid;
+
+        allow delete: if isAuthenticated()
+                      && resource.data.userId == request.auth.uid;
+      }
+
+      // ── Appointments sub-collection ────────────────────────────────────
+      // Users can create/read/update their own appointments.
+      // Workers can update status via admin SDK (server-side, not covered here).
+      match /appointments/{appointmentId} {
+
+        allow read: if isAuthenticated()
+                    && get(/databases/$(database)/documents/profiles/$(profileId)).data.userId == request.auth.uid;
+
+        allow create: if isAuthenticated()
+                      && request.resource.data.userId == request.auth.uid;
+
+        allow update: if isAuthenticated()
+                      && resource.data.userId == request.auth.uid
+                      && request.resource.data.userId == request.auth.uid;
+
+        allow delete: if isAuthenticated()
+                      && resource.data.userId == request.auth.uid;
+      }
+    }
+
+    // ── Audit Events ─────────────────────────────────────────────────────────
+    // Users can write audit events but never read them (admin-only via console).
+    match /auditEvents/{eventId} {
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if false;
+    }
+
+    // ── Default deny ─────────────────────────────────────────────────────────
+    // Everything not explicitly matched above is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -180,6 +180,7 @@
     import { db, requireAuth } from "./auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
     import { saveAssessment, getPastAssessmentSummaries } from "./history-store.js";
+    import { logAudit, AuditAction } from "./audit.js";
 
     const U = window.SAHAYA_UTIL;
     const I18N = window.SAHAYA_I18N;
@@ -188,6 +189,7 @@
 
     let messages = [];
     let awaitingReply = false;
+    const chatRateLimiter = new U.RateLimiter(10, 60000); // max 10 messages per minute
 
     const chatContainer = document.getElementById('chat-container');
     const typingIndicator = document.getElementById('typing-indicator');
@@ -443,10 +445,12 @@
                         } : null,
                         healthContext: healthContext
                     });
+                    logAudit(db, user.uid, AuditAction.ASSESSMENT_COMPLETE, { profileId: profileId, riskLevel: data.riskLevel });
                 } catch (histErr) {
                     console.error("Failed to save assessment to history:", histErr);
                     // Non-blocking — results page still works from localStorage.
                 }
+
 
                 const finalMsgDiv = document.createElement('div');
                 finalMsgDiv.className = "flex flex-col items-start gap-4 mt-2 mb-8";
@@ -457,7 +461,7 @@
                         <span class="text-xs font-semibold text-primary/80 italic" data-i18n="symptom_assessment_complete">${t('symptom_assessment_complete')}</span>
                     </div>
                 </div>
-                <div class="w-full flex justify-center py-4">
+                <div class="w-full flex flex-col items-center gap-3 py-4">
                     <a class="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm tracking-widest flex items-center gap-2 shadow-lg hover:bg-primary/90 transition-all active:scale-95 uppercase" href="results.html">
                         ${t('symptom_view_result')}
                         <span class="material-symbols-outlined !text-lg" data-icon="arrow_forward">arrow_forward</span>
@@ -468,9 +472,12 @@
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                 speakText(t('symptom_assessment_complete'));
 
+                // ── Hospital Appointment Popup ───────────────────────────
+                // Show popup after a short delay to let user see the result
                 setTimeout(() => {
-                    window.location.href = 'results.html';
-                }, 4000);
+                    showHospitalPopup();
+                }, 2000);
+
             } else {
                 addMessageToUI('assistant', data.content);
             }
@@ -488,6 +495,13 @@
         if (awaitingReply) return;
         const text = userInput.value.trim();
         if (!text) return;
+
+        // Rate limiting check
+        if (!chatRateLimiter.check()) {
+            var waitSec = chatRateLimiter.getWaitSeconds();
+            U.toast('Please wait ' + waitSec + ' seconds before sending another message.', 'info');
+            return;
+        }
 
         userInput.value = '';
         addMessageToUI('user', text);
@@ -534,12 +548,67 @@
         if (e.key === 'Enter') handleSend();
     });
 
+    // ── Hospital Appointment Popup ─────────────────────────────────────────
+    function showHospitalPopup() {
+        // Create overlay
+        var overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 z-[100] bg-black/50 flex items-center justify-center px-6';
+        overlay.style.animation = 'fadeIn 0.3s ease';
+
+        overlay.innerHTML = `
+            <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center" style="animation: slideUp 0.3s ease">
+                <div class="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-primary !text-3xl">local_hospital</span>
+                </div>
+                <h3 class="font-headline font-bold text-xl text-on-surface mb-2">Find Nearby Hospitals?</h3>
+                <p class="text-sm text-on-surface-variant leading-relaxed mb-6">
+                    We can help you find the nearest hospitals and book an appointment based on your assessment.
+                </p>
+                <div class="flex flex-col gap-3">
+                    <button id="popup-find-hospitals"
+                        class="w-full bg-gradient-to-r from-[#366759] to-[#7CAE9E] text-white px-6 py-3.5 rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined !text-lg">search</span>
+                        Find Hospitals
+                    </button>
+                    <button id="popup-skip"
+                        class="w-full bg-surface-container-low text-on-surface-variant px-6 py-3 rounded-xl font-medium text-sm active:scale-95 transition-all">
+                        Skip — View Results
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Add animation keyframes if not present
+        if (!document.getElementById('popup-animations')) {
+            var style = document.createElement('style');
+            style.id = 'popup-animations';
+            style.textContent = `
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            `;
+            document.head.appendChild(style);
+        }
+
+        overlay.querySelector('#popup-find-hospitals').addEventListener('click', function () {
+            overlay.remove();
+            window.location.href = 'hospitals.html';
+        });
+
+        overlay.querySelector('#popup-skip').addEventListener('click', function () {
+            overlay.remove();
+            window.location.href = 'results.html';
+        });
+    }
+
     // Translate page navigation
     window.openTranslatePage = function () {
         var page = window.location.href.split('/').pop().split('?')[0];
         localStorage.setItem('sahaya_translate_return', page);
         window.location.href = 'translate.html';
     };
+
 </script>
 </body>
 </html>
